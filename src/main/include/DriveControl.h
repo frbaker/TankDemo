@@ -14,7 +14,8 @@ void teleopController();//Bundles drive train with other robot opertaions
 
 private:
 void tankOperation();//Enables drive train operation in tank mode
-void reverseTank();//Enables drive train operation in single stick mode
+void reverseTank();//Reversed tank
+void traditionalDrive();//Enables drive train operation in single stick mode
 double filterInput(double input, double threshold);//Used to filter controller input to prevent drift
 void pollButtons();//Used to manage button actions on the controllers
 //Members Variables

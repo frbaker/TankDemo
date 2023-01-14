@@ -29,6 +29,10 @@ void DriveControl::reverseTank(){//Need to test the math on this one
     drivebase->setSpeed(-filterInput(controller_1->GetLeftY(),0.175),-filterInput(controller_1->GetRightY(),0.175));//Set tank reverse
 }
 
+void DriveControl::traditionalDrive(){
+    
+}
+
 double DriveControl::filterInput(double input, double threshold){
     double tempval = input;
 
