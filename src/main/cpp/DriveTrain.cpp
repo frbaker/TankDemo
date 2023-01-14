@@ -9,6 +9,9 @@ DriveTrain::DriveTrain(){
     rightmotor2 = new rev::CANSparkMax(7,rev::CANSparkMax::MotorType::kBrushless);
     gearshifter = new frc::DoubleSolenoid(frc::PneumaticsModuleType::CTREPCM,0,1);
 
+    rightmotor1->SetInverted(true);
+    rightmotor2->SetInverted(true);
+
     leftmotor2->Follow(*leftmotor1);//Have to dereference pointer since function is defined as pass by reference, so we need to
     rightmotor2->Follow(*rightmotor1);//pass the address of the object, not the address of the pointer
 
