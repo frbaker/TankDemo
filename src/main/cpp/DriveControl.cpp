@@ -1,6 +1,8 @@
 #include "DriveControl.h"
 #include <cmath>
 
+#define PI 3.141592653589793
+
 DriveControl::DriveControl(){
     controller_1 = new frc::XboxController(0);//Init main controller
     controller_2 = new frc::XboxController(1);//Init secondary controller
@@ -16,21 +18,31 @@ void DriveControl::teleopController(){
     pollButtons();//Continuously check the state of the buttons on the xbox controllers and respond accordingly
     if(is_tank_drive){//if the tank drive boolean is true, then use tank dive
         tankOperation();//Use tank drive style
-    }else {//else use reverse drive
-        reverseTank();//Use traditional drive style
+    }else {//else use traditional drive
+        traditionalDrive();//Use traditional drive style
     }
 }
 
 void DriveControl::tankOperation(){
-    drivebase->setSpeed(filterInput(controller_1->GetLeftY(),0.175),filterInput(controller_1->GetRightY(),0.175));//Set tank normal
+    //Use tank drive and ramp motor power output by squaring the controller input to form a nice curve
+    drivebase->setSpeed(std::pow((controller_1->GetLeftY(),0.175),2),std::pow(filterInput(controller_1->GetRightY(),0.175),2));
 }
 
-void DriveControl::reverseTank(){//Need to test the math on this one
-    drivebase->setSpeed(-filterInput(controller_1->GetLeftY(),0.175),-filterInput(controller_1->GetRightY(),0.175));//Set tank reverse
-}
 
 void DriveControl::traditionalDrive(){
-    
+
+//Add deadband filter after testing
+double y = controller_1->GetLeftY();//Get the overall power value after filtering the deadband
+double x = controller_1->GetRightX();//Get the steering value multiplier after filtering the deadband
+
+double vectorm = std::sqrt((x-0)*(x-0)+(y-0)*(y-0));//Get the magnitude of the vector
+double arclen = vectorm*std::atan(y/x);//Get the arc length formed by the vector
+
+double leftpower = (PI-arclen)/PI;//Set left power to remaining arc length of the semi circle and proportion it to a percentage of 1
+double rightpower = arclen/PI;//Set the right power to the arc length and proportion it to a percentage of 1
+
+drivebase->setSpeed(leftpower,rightpower);//Send the calculated values to the drive train
+
 }
 
 double DriveControl::filterInput(double input, double threshold){
