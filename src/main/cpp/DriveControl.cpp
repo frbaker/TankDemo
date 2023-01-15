@@ -28,7 +28,7 @@ void DriveControl::teleopController(){
 
 void DriveControl::tankOperation(){
     //Use tank drive and ramp motor power output by squaring the controller input to form a nice curve
-    drivebase->setSpeed(-filterInput(controller_1->GetLeftY(),0.175),-filterInput(controller_1->GetRightY(),0.175));
+    drivebase->setSpeed(std::pow(filterInput(controller_1->GetLeftY(),0.175),3.0),std::pow(filterInput(controller_1->GetRightY(),0.175),3.0));
 }
 
 

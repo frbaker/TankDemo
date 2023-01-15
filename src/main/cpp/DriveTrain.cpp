@@ -27,18 +27,20 @@ DriveTrain::DriveTrain(){
 
 void DriveTrain::setSpeed(double ls, double rs){
     //Set the speeds for each side of the robots drive train
-    leftmotor1->Set(ls);
+    leftmotor1->Set(-ls);
     //leftmotor2->Set(ls);//Should be controlled by motor 1
-    rightmotor1->Set(rs);
+    rightmotor1->Set(-rs);
     //rightmotor2->Set(rs);//Should be controlled by motor 1
 }
 
 void DriveTrain::attemptGearShift(){
         if(is_low_gear){//if we are in low gear, activate the solenoid to shift to high
-        gearshifter->Set(frc::DoubleSolenoid::kForward);//SHIFT TO HIGH -- Might have to switch this depending on solenoid setup
+            if(std::abs(leftmotor1->Get())<=0.2 && std::abs(rightmotor1->Get())<=0.2){
+                gearshifter->Set(frc::DoubleSolenoid::kForward);//SHIFT TO HIGH -- Might have to switch this depending on solenoid setup
+            }
         is_low_gear = false;//Set our gear state to whatever it is not
         }else{//if we are in high gear, only shift to low if the robot is moving slow enough
-            if(std::abs(leftmotor1->Get())<=0.4 && std::abs(rightmotor1->Get())<=0.4){
+            if(std::abs(leftmotor1->Get())<=0.2 && std::abs(rightmotor1->Get())<=0.2){
                 gearshifter->Set(frc::DoubleSolenoid::kReverse);//SHIFT TO LOW -- Might have to switch this depending on solenoid setup
             }
             is_low_gear = true;
