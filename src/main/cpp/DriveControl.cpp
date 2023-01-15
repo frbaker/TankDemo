@@ -16,32 +16,32 @@ DriveControl::DriveControl(){
 
 void DriveControl::teleopController(){
     pollButtons();//Continuously check the state of the buttons on the xbox controllers and respond accordingly
+    
+    tankOperation();
+    /*
     if(is_tank_drive){//if the tank drive boolean is true, then use tank dive
         tankOperation();//Use tank drive style
     }else {//else use traditional drive
         traditionalDrive();//Use traditional drive style
-    }
+    }*/
 }
 
 void DriveControl::tankOperation(){
     //Use tank drive and ramp motor power output by squaring the controller input to form a nice curve
-    drivebase->setSpeed(std::pow((controller_1->GetLeftY(),0.175),2),std::pow(filterInput(controller_1->GetRightY(),0.175),2));
+    drivebase->setSpeed(-filterInput(controller_1->GetLeftY(),0.175),-filterInput(controller_1->GetRightY(),0.175));
 }
 
 
 void DriveControl::traditionalDrive(){
 
-//Add deadband filter after testing
-double y = controller_1->GetLeftY();//Get the overall power value after filtering the deadband
-double x = controller_1->GetRightX();//Get the steering value multiplier after filtering the deadband
 
-double vectorm = std::sqrt((x-0)*(x-0)+(y-0)*(y-0));//Get the magnitude of the vector
-double arclen = vectorm*std::atan(y/x);//Get the arc length formed by the vector
+double y = filterInput(controller_1->GetLeftY(),0.175);//Get the overall power value after filtering the deadband
+double x = filterInput(controller_1->GetRightX(),0.175);//Get the steering value multiplier after filtering the deadband
 
-double leftpower = (PI-arclen)/PI;//Set left power to remaining arc length of the semi circle and proportion it to a percentage of 1
-double rightpower = arclen/PI;//Set the right power to the arc length and proportion it to a percentage of 1
+double leftpower = (y+y*x)/2;
+double rightpower = (y-y*x)/2;
 
-drivebase->setSpeed(leftpower,rightpower);//Send the calculated values to the drive train
+drivebase->setSpeed(leftpower,rightpower);
 
 }
 
@@ -57,9 +57,16 @@ double DriveControl::filterInput(double input, double threshold){
 
 void DriveControl::pollButtons(){
     //Change drive styles    
-    if(controller_1->GetBackButton() && controller_1->GetStartButton() && drive_switch_timer->getTimer()){//Swap drive modes if start and back button are pushed simultaneously
+   /* if(controller_1->GetBackButton() && controller_1->GetStartButton() && drive_switch_timer->getTimer()){//Swap drive modes if start and back button are pushed simultaneously
+        is_tank_drive = !is_tank_drive;//Swap tank drive state
+    }*/
+
+    //Change Drive Styles
+    if(controller_1->GetBButton() && shift_timer->getTimer()){//If they press the A button
         is_tank_drive = !is_tank_drive;//Swap tank drive state
     }
+
+
     //Shift gears
     if(controller_1->GetAButton() && shift_timer->getTimer()){//If they press the A button
         drivebase->attemptGearShift();//Attempt shift to opposite gear ratio
