@@ -4,6 +4,7 @@
 //#include <ctre/phoenixpro/TalonFX.hpp>
 #include <rev/CANSparkMAX.h>
 #include "frc/DoubleSolenoid.h"
+#include "frc/DigitalOutput.h"
 
 class DriveTrain{
 
@@ -12,6 +13,7 @@ class DriveTrain{
     ~DriveTrain();//Dtor
     void setSpeed(double ls, double rs);
     void attemptGearShift();
+    void swapLedsDir();
     private:
 
     rev::CANSparkMax* leftmotor1;
@@ -21,7 +23,11 @@ class DriveTrain{
 
     frc::DoubleSolenoid* gearshifter;
 
+    frc::DigitalOutput* fwdLeds;
+    frc::DigitalOutput* bckLeds;
+
     bool is_low_gear;
+    bool is_fwd_cntrl;
 
     /*TalonFX Motor Controllers
    ctre::phoenixpro::hardware::TalonFX* leftmotor1;
