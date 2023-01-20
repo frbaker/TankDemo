@@ -12,18 +12,11 @@ DriveTrain::DriveTrain(){
     leftmotor1->SetInverted(true);//Invert left side motors since they are flipped
     leftmotor2->SetInverted(true);//Invert left side motors since they are flipped
 
-
     leftmotor2->Follow(*leftmotor1);//Have to dereference pointer since function is defined as pass by reference, so we need to
     rightmotor2->Follow(*rightmotor1);//pass the address of the object, not the address of the pointer
 
-    fwdLeds = new frc::DigitalOutput(0);
-    bckLeds = new frc::DigitalOutput(1);
-
     //Set robot to start in low gear
     is_low_gear = true;
-
-    //Set robot to start with leds indicating forward facing
-    is_fwd_cntrl = true;
 
     /*TalonFX Motor Controllers
     leftmotor1 = new ctre::phoenixpro::hardware::TalonFX(0,"");//Leave can name empty for auto init
@@ -55,12 +48,6 @@ void DriveTrain::attemptGearShift(){
         }
 }
 
-void DriveTrain::swapLedsDir(){ //Should only need to be called when the drive controlls are swapped to insane mode (backwards is forward/forward is backward)
-    //with Normal Controlls - turn on DIO 0, in suicide mode turn off DIO 0
-    is_fwd_cntrl ? fwdLeds->Set(1) : fwdLeds->Set(0);   
-    //In Suicide mode trun on DIO 1, in normal control - turn off DIO 1
-    !is_fwd_cntrl ? bckLeds->Set(1) : bckLeds->Set(0); 
-}
 
 DriveTrain::~DriveTrain(){
     //Free Drive motor memory on drive train object destruction
@@ -69,6 +56,4 @@ DriveTrain::~DriveTrain(){
     delete rightmotor1;
     delete rightmotor2;
     delete gearshifter;
-    delete fwdLeds;
-    delete bckLeds;
 }
