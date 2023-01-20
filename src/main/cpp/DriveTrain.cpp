@@ -68,4 +68,6 @@ DriveTrain::~DriveTrain(){
     delete rightmotor1;
     delete rightmotor2;
     delete gearshifter;
+    delete fwdLeds;
+    delete bckLeds;
 }
