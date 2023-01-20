@@ -32,20 +32,16 @@ void DriveControl::tankOperation(){
 
 
 void DriveControl::traditionalDrive(){
-
-
-double y = filterInput(controller_1->GetLeftY(),0.175);//Get the overall power value after filtering the deadband
-double x = filterInput(controller_1->GetRightX(),0.175);//Get the steering value multiplier after filtering the deadband
-
-double leftpower = (y+y*x/2)/2;
-double rightpower = (y-y*x/2)/2;
-
-if(y == 0.0){//If no power, add power to turning axis
-    drivebase->setSpeed(-x*0.4,x*0.4);
-}else{
-    drivebase->setSpeed(leftpower,rightpower);//Use normal drive if power applied
-}
-
+    double y = filterInput(controller_1->GetLeftY(),0.175);//Get the overall power value after filtering the deadband
+    double x = filterInput(controller_1->GetRightX(),0.175);//Get the steering value multiplier after filtering the deadband
+    double leftpower = (y+y*x/2)/2;
+    double rightpower = (y-y*x/2)/2;
+    
+    if(y == 0.0){//If no power, add power to turning axis
+        drivebase->setSpeed(-x*0.4,x*0.4);
+    }else{
+        drivebase->setSpeed(leftpower,rightpower);//Use normal drive if power applied
+    }
 }
 
 double DriveControl::filterInput(double input, double threshold){
@@ -63,12 +59,6 @@ void DriveControl::pollButtons(){
     if(controller_1->GetBackButton() && controller_1->GetStartButton() && drive_switch_timer->getTimer()){//Swap drive modes if start and back button are pushed simultaneously
         is_tank_drive = !is_tank_drive;//Swap tank drive state
     }
-
-    //Change Drive Styles
-    /*if(controller_1->GetBButton() && shift_timer->getTimer()){//If they press the A button
-        is_tank_drive = !is_tank_drive;//Swap tank drive state
-    }*/
-
 
     //Shift gears
     if(controller_1->GetAButton() && shift_timer->getTimer()){//If they press the A button
