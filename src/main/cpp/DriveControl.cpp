@@ -9,7 +9,6 @@ DriveControl::DriveControl(){
     drivebase = new DriveTrain();//Init our drive train
     is_tank_drive = true;//Start the robot in tank drive mode
     //Timers
-    shift_timer = new Timer(300);//Delay time in milliseconds
     drive_switch_timer = new Timer(300);//Delay time in milliseconds
 }
 
@@ -65,10 +64,6 @@ void DriveControl::pollButtons(){
         is_tank_drive = !is_tank_drive;//Swap tank drive state
     }
 
-    //Shift gears
-    if(controller_1->GetAButton() && shift_timer->getTimer()){//If they press the A button
-        drivebase->attemptGearShift();//Attempt shift to opposite gear ratio
-    }
 }
 
 DriveControl::~DriveControl(){
@@ -76,4 +71,5 @@ DriveControl::~DriveControl(){
     delete controller_1;
     delete controller_2;
     delete drivebase;
+    delete drive_switch_timer;
 }

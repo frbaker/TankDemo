@@ -25,7 +25,6 @@ frc::XboxController* controller_2;//Secondary Controller
 //Stack
 bool is_tank_drive;//variable to hold drive style
 //Timers
-Timer* shift_timer;
 Timer* drive_switch_timer;
 
 };
