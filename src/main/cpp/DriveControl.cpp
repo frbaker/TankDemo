@@ -34,7 +34,7 @@ void DriveControl::tankOperation(){
 void DriveControl::traditionalDrive(){
     double y = filterInput(controller_1->GetLeftY(),0.175);//Get the overall power value after filtering the deadband
     double x = filterInput(controller_1->GetRightX(),0.175);//Get the steering value multiplier after filtering the deadband
-    double leftpower = 0;
+    double leftpower = 0.;
     double rightpower = 0.;
     
     if(y>0.0){//Forward
