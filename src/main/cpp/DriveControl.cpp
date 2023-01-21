@@ -34,13 +34,18 @@ void DriveControl::tankOperation(){
 void DriveControl::traditionalDrive(){
     double y = filterInput(controller_1->GetLeftY(),0.175);//Get the overall power value after filtering the deadband
     double x = filterInput(controller_1->GetRightX(),0.175);//Get the steering value multiplier after filtering the deadband
-    double leftpower = (y+y*x/2)/2;
-    double rightpower = (y-y*x/2)/2;
+    double leftpower = 0;
+    double rightpower = 0.;
     
-    if(y == 0.0){//If no power, add power to turning axis
-        drivebase->setSpeed(-x*0.4,x*0.4);
-    }else{
-        drivebase->setSpeed(leftpower,rightpower);//Use normal drive if power applied
+    if(y>0.0){//Forward
+        leftpower = std::clamp(std::pow(y,2.0) + std::sin(PI*x/4),0.1,1.0);
+        rightpower = std::clamp(std::pow(y,2.0) + std::sin(PI*x/4),0.1,1.0);
+    }else if(y<0.0){//Reverse
+        leftpower = -std::clamp(std::pow(y,2.0),0.1,1.0);//Set negative value for reverse
+        rightpower = -std::clamp(std::pow(y,2.0),0.1,1.0);
+    }else{//0 power, so spin
+        leftpower = std::pow(-x,3.0);
+        rightpower = std::pow(x,3.0);
     }
 }
 
