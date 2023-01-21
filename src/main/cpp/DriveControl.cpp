@@ -46,6 +46,7 @@ void DriveControl::traditionalDrive(){
         leftpower = std::pow(-x,3.0);
         rightpower = std::pow(x,3.0);
     }
+    drivebase->setSpeed(leftpower,rightpower);//Set power values to the motor
 }
 
 double DriveControl::filterInput(double input, double threshold){
