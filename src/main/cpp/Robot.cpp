@@ -4,9 +4,10 @@
 
 #include "Robot.h"
 #include "DriveControl.h"
+#include "Telemetry.h"
 
 DriveControl LeTank;//Create drive control object
-
+Telemetry data(LeTank.getDriveTrain());//Reference our drive Control object
 //GIT TEST
 
 

@@ -12,6 +12,10 @@ DriveControl::DriveControl(){
     drive_switch_timer = new Timer(300);//Delay time in milliseconds
 }
 
+DriveTrain* DriveControl::getDriveTrain(){
+    return drivebase;//Return the pointer to our drivebase object
+
+}
 
 void DriveControl::teleopController(){
     pollButtons();//Continuously check the state of the buttons on the xbox controllers and respond accordingly

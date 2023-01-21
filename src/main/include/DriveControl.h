@@ -11,6 +11,7 @@ public:
 DriveControl();//Ctor
 ~DriveControl();//Dtor
 void teleopController();//Bundles drive train with other robot opertaions
+DriveTrain* getDriveTrain();//Returns the drive train object pointer
 
 private:
 void tankOperation();//Enables drive train operation in tank mode

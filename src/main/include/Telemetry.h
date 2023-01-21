@@ -8,12 +8,12 @@ class Telemetry{
 
 public:
 
-Telemetry();
+Telemetry(DriveTrain* drvt);
 ~Telemetry();
 
 private:
-
-struct SparkMaxEncoderBundle* drive_encoders;
+DriveTrain* drivebase;//Object pointer to hold reference to our drive base
+struct SparkMaxEncoderBundle* drive_encoders;//struct pointer to hold reference to our drive base encoders
 
 };
 
