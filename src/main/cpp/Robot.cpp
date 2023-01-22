@@ -9,11 +9,12 @@
 DriveTrain drivetrain;//Object to control drive motors
 DriveControl controller(&drivetrain);//Create drive control object
 Telemetry data(&drivetrain);//Reference our drivetrain object
-//GIT TEST
 
 
-
-void Robot::RobotInit() {}//Runs once one startup
+void Robot::RobotInit() {
+  //Link our drivetrain with our telemetry
+  drivetrain.loadTelemetry(data.exportTelemetry());
+}//Runs once one startup
 void Robot::RobotPeriodic() {}
 
 void Robot::AutonomousInit() {
