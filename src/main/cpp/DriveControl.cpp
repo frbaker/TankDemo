@@ -3,18 +3,13 @@
 
 #define PI 3.141592653589793
 
-DriveControl::DriveControl(){
+DriveControl::DriveControl(DriveTrain* dtobj){
     controller_1 = new frc::XboxController(0);//Init main controller
     controller_2 = new frc::XboxController(1);//Init secondary controller
-    drivebase = new DriveTrain();//Init our drive train
+    drivebase = dtobj;//Get the drivetrain object
     is_tank_drive = true;//Start the robot in tank drive mode
     //Timers
     drive_switch_timer = new Timer(300);//Delay time in milliseconds
-}
-
-DriveTrain* DriveControl::getDriveTrain(){
-    return drivebase;//Return the pointer to our drivebase object
-
 }
 
 void DriveControl::teleopController(){
@@ -75,6 +70,5 @@ DriveControl::~DriveControl(){
     //Free memory
     delete controller_1;
     delete controller_2;
-    delete drivebase;
     delete drive_switch_timer;
 }

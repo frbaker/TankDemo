@@ -6,8 +6,9 @@
 #include "DriveControl.h"
 #include "Telemetry.h"
 
-DriveControl LeTank;//Create drive control object
-Telemetry data(LeTank.getDriveTrain());//Reference our drive Control object
+DriveTrain drivetrain;//Object to control drive motors
+DriveControl controller(&drivetrain);//Create drive control object
+Telemetry data(&drivetrain);//Reference our drivetrain object
 //GIT TEST
 
 
@@ -27,7 +28,8 @@ void Robot::AutonomousPeriodic() {
 void Robot::TeleopInit() {}//Runs once on teleop start
 void Robot::TeleopPeriodic() {
 //Put main code here. Called every 20ms by default.
-LeTank.teleopController();
+controller.teleopController();//Take input from controllers -- main control during teleop
+data.runMetrics();//Constantly update robot position data
 
 
 }//Put main teleop control code here

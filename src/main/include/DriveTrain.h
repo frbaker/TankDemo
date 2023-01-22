@@ -4,28 +4,25 @@
 //#include <ctre/phoenixpro/TalonFX.hpp>
 #include <rev/CANSparkMAX.h>
 #include <frc/DigitalOutput.h>
-#include "Encoders.h"
 
 class DriveTrain{
 
     public:
-
-
     DriveTrain();//Ctor
     ~DriveTrain();//Dtor
     void setSpeed(double ls, double rs);
-    struct SparkMaxEncoderBundle* getEncoders();
+    void getSpeeds();//returns the current speeds of each motor
+    
     private:
+    rev::CANSparkMax* left_motor_1;
+    rev::CANSparkMax* left_motor_2;
+    rev::CANSparkMax* right_motor_1;
+    rev::CANSparkMax* right_motor_2;
 
-    void initEncoders();//Used in constructor to populate the encoder struct
-    void deleteEncoders();//Used in destructor to free encoder struct
-
-    rev::CANSparkMax* leftmotor1;
-    rev::CANSparkMax* leftmotor2;
-    rev::CANSparkMax* rightmotor1;
-    rev::CANSparkMax* rightmotor2;
-
-    struct SparkMaxEncoderBundle* drive_base_encoders;
+    rev::SparkMaxRelativeEncoder* left_encoder_1;
+    rev::SparkMaxRelativeEncoder* left_encoder_2;
+    rev::SparkMaxRelativeEncoder* right_encoder_1;
+    rev::SparkMaxRelativeEncoder* right_encoder_2;
 
 
     /*TalonFX Motor Controllers

@@ -2,7 +2,7 @@
 #define TELEMETRY_H
 
 #include "DriveTrain.h"
-
+#include <ctre/phoenix/sensors/PigeonIMU.h>
 
 class Telemetry{
 
@@ -10,10 +10,14 @@ public:
 
 Telemetry(DriveTrain* drvt);
 ~Telemetry();
+void runMetrics();//Main function for updating data
 
 private:
+void setZero();//Used to set our home/zero point when the robot starts
+
 DriveTrain* drivebase;//Object pointer to hold reference to our drive base
-struct SparkMaxEncoderBundle* drive_encoders;//struct pointer to hold reference to our drive base encoders
+ctre::phoenix::sensors::PigeonIMU* gyro;
+
 
 };
 
