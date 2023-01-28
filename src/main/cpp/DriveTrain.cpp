@@ -1,6 +1,9 @@
 #include "DriveTrain.h"
 
-// Ctor
+/**
+ * @brief Construct a new Drive Train:: Drive Train object
+ * 
+ */
 DriveTrain::DriveTrain()
 {
     // Spark motor controller creation for neo brushless motors
@@ -25,6 +28,11 @@ DriveTrain::DriveTrain()
     */
 }
 
+/**
+ * @brief Configure the motors to turn in the correct direction relative to robot forward.
+ * Used at startup
+ * 
+ */
 void DriveTrain::configureMotors()
 {
     // Robot specific motor settings
@@ -35,6 +43,10 @@ void DriveTrain::configureMotors()
     right_motor_2->Follow(*right_motor_1); // pass the address of the object, not the address of the pointer
 }
 
+/**
+ * @brief Set all encoders to zero. Used at startup
+ * 
+ */
 void DriveTrain::setZero()
 {
     // Set the start position of the motor encoders to zero
@@ -44,6 +56,12 @@ void DriveTrain::setZero()
     right_encoder_2->SetPosition(0.0);
 }
 
+/**
+ * @brief Set the speed of the robots left and right motors
+ * 
+ * @param ls Left side motor speed
+ * @param rs Right side motor speed
+ */
 void DriveTrain::setSpeed(double ls, double rs)
 {
     // Set the speeds for each side of the robots drive train
@@ -53,11 +71,20 @@ void DriveTrain::setSpeed(double ls, double rs)
     // rightmotor2->Set(rs);//Should be controlled by motor 1
 }
 
+/**
+ * @brief Links drivetrain data to the telemetry class
+ * 
+ * @param dta Data packet being sent to the telemetry class
+ */
 void DriveTrain::loadTelemetry(SparkMaxPacket *dta)
 {
     telemetry_link = dta;
 }
 
+/**
+ * @brief Fill the data packet being sent with fresh data
+ * 
+ */
 void DriveTrain::updateTelemetry()
 {
     // Update motor power
@@ -72,6 +99,10 @@ void DriveTrain::updateTelemetry()
     telemetry_link->encoder_position_4 = right_encoder_2->GetPosition();
 }
 
+/**
+ * @brief Destroy the Drive Train:: Drive Train object
+ * 
+ */
 DriveTrain::~DriveTrain()
 {
     // Motors

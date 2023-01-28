@@ -25,6 +25,7 @@ void Robot::AutonomousInit()
 void Robot::AutonomousPeriodic()
 {
   // Put main auto code here. Called every 20s during auto.
+  data.runMetrics(); // Constantly update robot position data
 }
 
 void Robot::TeleopInit() {} // Runs once on teleop start
