@@ -10,7 +10,7 @@ DriveControl::DriveControl(DriveTrain *dtobj)
     drivebase = dtobj;                         // Get the drivetrain object
     is_tank_drive = true;                      // Start the robot in tank drive mode
     // Timers
-    drive_switch_timer = new Timer(300); // Delay time in milliseconds
+    button_grace_period_timer = new Timer(300); // Delay time in milliseconds
 }
 
 void DriveControl::teleopController()
@@ -73,9 +73,14 @@ double DriveControl::filterInput(double input, double threshold)
 void DriveControl::pollButtons()
 {
     // Change drive styles
-    if (controller_1->GetBackButton() && controller_1->GetStartButton() && drive_switch_timer->getTimer())
+    if (controller_1->GetBackButton() && controller_1->GetStartButton() && button_grace_period_timer->getTimer())
     {                                   // Swap drive modes if start and back button are pushed simultaneously
         is_tank_drive = !is_tank_drive; // Swap tank drive state
+    }
+
+    if (controller_1->GetAButton() & button_grace_period_timer->getTimer())
+    {
+        // Template for the a button
     }
 }
 
@@ -84,5 +89,5 @@ DriveControl::~DriveControl()
     // Free memory
     delete controller_1;
     delete controller_2;
-    delete drive_switch_timer;
+    delete button_grace_period_timer;
 }

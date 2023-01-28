@@ -1,7 +1,8 @@
 #ifndef DATA_PACKET_H
 #define DATA_PACKET_H
 
-struct SparkMaxPacket{
+struct SparkMaxPacket
+{
     double motor_power_1;
     double motor_power_2;
     double motor_power_3;
@@ -12,6 +13,4 @@ struct SparkMaxPacket{
     double encoder_position_4;
 };
 
-
-
-#endif//DATA_PACKET_H
+#endif // DATA_PACKET_H

@@ -26,7 +26,7 @@ private:
     // Stack
     bool is_tank_drive; // variable to hold drive style
     // Timers
-    Timer *drive_switch_timer;
+    Timer *button_grace_period_timer;
 };
 
 #endif // DRIVECONTROL_H

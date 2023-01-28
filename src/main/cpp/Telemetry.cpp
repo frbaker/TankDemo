@@ -16,7 +16,8 @@ SparkMaxPacket *Telemetry::exportTelemetry()
 
 void Telemetry::runMetrics()
 {
-    if(snapshot_timer->getTimer()){//Capture a snapshot of the robots data every 100ms
+    if (snapshot_timer->getTimer())
+    { // Capture a snapshot of the robots data every 100ms
         captureSnapshot();
     }
     // Do calculations and such here
@@ -31,7 +32,7 @@ void Telemetry::captureSnapshot()
     temp->left_speed = drivetrain_data->motor_power_1 * drivetrain_data->motor_power_2 / 2;          // Average left speed value
     temp->right_speed = drivetrain_data->motor_power_3 * drivetrain_data->motor_power_4 / 2;         // Average right speed value
     temp->x_rot = gyro->GetYaw();                                                                    // Get x rotation
-    instruction_stack.push(temp);                                                                    // Add snapshot struct to temp
+    instruction_queue.push(temp);                                                                    // Add snapshot struct to temp
 }
 
 Telemetry::~Telemetry()

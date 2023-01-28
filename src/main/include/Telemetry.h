@@ -32,7 +32,7 @@ private:
         double x_rot;
     };
 
-    std::queue<struct Snapshot *> instruction_stack;
+    std::queue<struct Snapshot *> instruction_queue;
 };
 
 #endif // TELEMETRY_H
