@@ -1,5 +1,10 @@
 #include "Telemetry.h"
 
+/**
+ * @brief Construct a new Telemetry:: Telemetry object
+ * 
+ * @param drvt Takes a pointer to the drivetrain object to enable drivetrain data passthrough
+ */
 Telemetry::Telemetry(DriveTrain *drvt)
 {
     drivebase = drvt;                                   // Reference our created drivetrain
@@ -12,11 +17,20 @@ Telemetry::Telemetry(DriveTrain *drvt)
     max_rewind_steps = 5 * 1000 / timer_interval;       // Set the max rewind steps to be proportional to the interval time and overall time
 }
 
+/**
+ * @brief Expose the telemetry data packet to the drivetrain so that the drivetrain can populate it with data.
+ * 
+ * @return SparkMaxPacket* 
+ */
 SparkMaxPacket *Telemetry::exportTelemetry()
 {
     return drivetrain_data; // Return our struct pointer to expose writing to telemetry data
 }
 
+/**
+ * @brief Main method called in the robots periodic functions to constantly update telemetry data
+ * 
+ */
 void Telemetry::runMetrics()
 {
     if (snapshot_timer->getTimer())
@@ -28,6 +42,11 @@ void Telemetry::runMetrics()
     // Do calculations and such here
 }
 
+/**
+ * @brief Create a current snapshot of the robots data and store it into a queue for later use
+ *
+ * 
+ */
 void Telemetry::captureSnapshot()
 {
     new_capture = new Snapshot;
@@ -39,6 +58,10 @@ void Telemetry::captureSnapshot()
     instruction_queue.push(new_capture);                                                                    // Add snapshot struct to new_capture
 }
 
+/**
+ * @brief Takes data captured by the snapshot and adds it to a doubly linked list that acts as both as queue and a stack
+ * 
+ */
 void Telemetry::manageRewind()
 {
     rewind_steps.push_back(new_capture);
@@ -51,6 +74,10 @@ void Telemetry::manageRewind()
 
 // TODO: Add methodd to get the current instruction stack whether by copying or freezing new data addition so we can pass data to drivetrain input
 
+/**
+ * @brief Destroy the Telemetry:: Telemetry object
+ * 
+ */
 Telemetry::~Telemetry()
 {
     delete gyro;            // Free the gyro memory

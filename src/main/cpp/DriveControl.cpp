@@ -3,6 +3,11 @@
 
 #define PI 3.141592653589793
 
+/**
+ * @brief Construct a new Drive Control:: Drive Control object
+ * 
+ * @param dtobj Takes a pointer to the robot drive train object
+ */
 DriveControl::DriveControl(DriveTrain *dtobj)
 {
     controller_1 = new frc::XboxController(0); // Init main controller
@@ -13,6 +18,10 @@ DriveControl::DriveControl(DriveTrain *dtobj)
     button_grace_period_timer = new Timer(300); // Delay time in milliseconds
 }
 
+/**
+ * @brief Main method to handle robot-joystick interaction during teleop
+ * 
+ */
 void DriveControl::teleopController()
 {
     pollButtons(); // Continuously check the state of the buttons on the xbox controllers and respond accordingly
@@ -27,12 +36,20 @@ void DriveControl::teleopController()
     }
 }
 
+/**
+ * @brief Tank drive style implementation
+ * 
+ */
 void DriveControl::tankOperation()
 {
     // Use tank drive and ramp motor power output by squaring the controller input to form a nice curve
     drivebase->setSpeed(std::pow(filterInput(controller_1->GetLeftY(), 0.175), 3.0), std::pow(filterInput(controller_1->GetRightY(), 0.175), 3.0));
 }
 
+/**
+ * @brief Traditional drive style implementation
+ * 
+ */
 void DriveControl::traditionalDrive()
 {
     double y = filterInput(controller_1->GetLeftY(), 0.175);  // Get the overall power value after filtering the deadband
@@ -58,6 +75,13 @@ void DriveControl::traditionalDrive()
     drivebase->setSpeed(leftpower, rightpower); // Set power values to the motor
 }
 
+/**
+ * @brief Takes joystick input and filters out low values that can be caused by joystick drift
+ * 
+ * @param input Data to filter
+ * @param threshold Ammount to filter relative to base 0
+ * @return double 
+ */
 double DriveControl::filterInput(double input, double threshold)
 {
     double tempval = input;
@@ -70,6 +94,10 @@ double DriveControl::filterInput(double input, double threshold)
     return 0.0; // Return zero if the input from the controller does not reach above the threshold
 }
 
+/**
+ * @brief Handle button input and mappings
+ * 
+ */
 void DriveControl::pollButtons()
 {
     // Change drive styles
@@ -84,6 +112,10 @@ void DriveControl::pollButtons()
     }
 }
 
+/**
+ * @brief Destroy the Drive Control:: Drive Control object
+ * 
+ */
 DriveControl::~DriveControl()
 {
     // Free memory

@@ -26,6 +26,8 @@ void Robot::AutonomousInit()
 void Robot::AutonomousPeriodic()
 {
   // Put main auto code here. Called every 20s during auto.
+  
+  
   const auto& result = camera.GetLatestResult();
   bool hasTargets = result.HasTargets();
   if (hasTargets){
@@ -43,7 +45,8 @@ void Robot::AutonomousPeriodic()
 
     //Now Conner can do stuff
   }
-  
+
+  data.runMetrics(); // Constantly update robot position data
 }
 
 void Robot::TeleopInit() {} // Runs once on teleop start
