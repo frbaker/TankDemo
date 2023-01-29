@@ -16,9 +16,9 @@ public:
     ~Vision();
 
 private:
-    /*photonlib::PhotonCamera *camera;
+    photonlib::PhotonCamera *camera;
     photonlib::PhotonPipelineResult *result;
-    photonlib::PhotonTrackedTarget *target;*/
+    photonlib::PhotonTrackedTarget *target;
 
     // TODO - change all of these to appropriate settings once we have camera mounted
     const units::meter_t CAMERA_HEIGHT = 24_in;    // camera height on robot
