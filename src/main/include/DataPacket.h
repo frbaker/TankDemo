@@ -3,14 +3,10 @@
 
 struct SparkMaxPacket
 {
-    double motor_power_1;
-    double motor_power_2;
-    double motor_power_3;
-    double motor_power_4;
-    double encoder_position_1;
-    double encoder_position_2;
-    double encoder_position_3;
-    double encoder_position_4;
+    double left_motor_power;
+    double right_motor_power;
+    double left_position;
+    double right_position;
 };
 
 #endif // DATA_PACKET_H

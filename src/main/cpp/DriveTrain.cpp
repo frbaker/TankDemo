@@ -2,7 +2,7 @@
 
 /**
  * @brief Construct a new Drive Train:: Drive Train object
- * 
+ *
  */
 DriveTrain::DriveTrain()
 {
@@ -31,7 +31,7 @@ DriveTrain::DriveTrain()
 /**
  * @brief Configure the motors to turn in the correct direction relative to robot forward.
  * Used at startup
- * 
+ *
  */
 void DriveTrain::configureMotors()
 {
@@ -45,7 +45,7 @@ void DriveTrain::configureMotors()
 
 /**
  * @brief Set all encoders to zero. Used at startup
- * 
+ *
  */
 void DriveTrain::setZero()
 {
@@ -56,9 +56,14 @@ void DriveTrain::setZero()
     right_encoder_2->SetPosition(0.0);
 }
 
+bool DriveTrain::moveTo(double lpos, double rpos, double lspd, double rspd)
+{
+   // if ()
+}
+
 /**
  * @brief Set the speed of the robots left and right motors
- * 
+ *
  * @param ls Left side motor speed
  * @param rs Right side motor speed
  */
@@ -73,7 +78,7 @@ void DriveTrain::setSpeed(double ls, double rs)
 
 /**
  * @brief Links drivetrain data to the telemetry class
- * 
+ *
  * @param dta Data packet being sent to the telemetry class
  */
 void DriveTrain::loadTelemetry(SparkMaxPacket *dta)
@@ -83,25 +88,21 @@ void DriveTrain::loadTelemetry(SparkMaxPacket *dta)
 
 /**
  * @brief Fill the data packet being sent with fresh data
- * 
+ *
  */
 void DriveTrain::updateTelemetry()
 {
     // Update motor power
-    telemetry_link->motor_power_1 = left_motor_1->Get();
-    telemetry_link->motor_power_2 = left_motor_2->Get();
-    telemetry_link->motor_power_3 = right_motor_1->Get();
-    telemetry_link->motor_power_4 = right_motor_2->Get();
+    telemetry_link->left_motor_power = left_motor_1->Get();   // Don't average since second motor is just a follower
+    telemetry_link->right_motor_power = right_motor_1->Get(); // Don't average since second motor is just a follower
     // Update encoder positions
-    telemetry_link->encoder_position_1 = left_encoder_1->GetPosition();
-    telemetry_link->encoder_position_2 = left_encoder_2->GetPosition();
-    telemetry_link->encoder_position_3 = right_encoder_1->GetPosition();
-    telemetry_link->encoder_position_4 = right_encoder_2->GetPosition();
+    telemetry_link->left_position = left_encoder_1->GetPosition() * left_encoder_2->GetPosition() / 2;    // Average the left side motor values
+    telemetry_link->right_position = right_encoder_1->GetPosition() * right_encoder_2->GetPosition() / 2; // Average the left side motor values
 }
 
 /**
  * @brief Destroy the Drive Train:: Drive Train object
- * 
+ *
  */
 DriveTrain::~DriveTrain()
 {

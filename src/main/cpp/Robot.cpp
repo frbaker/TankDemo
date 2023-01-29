@@ -28,7 +28,7 @@ void Robot::AutonomousPeriodic()
   // Put main auto code here. Called every 20s during auto.
   
   
-  const auto& result = camera.GetLatestResult();
+  photonlib::PhotonPipelineResult result = camera.GetLatestResult();
   bool hasTargets = result.HasTargets();
   if (hasTargets){
     photonlib::PhotonTrackedTarget target = result.GetBestTarget(); 

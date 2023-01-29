@@ -2,7 +2,7 @@
 
 /**
  * @brief Construct a new Telemetry:: Telemetry object
- * 
+ *
  * @param drvt Takes a pointer to the drivetrain object to enable drivetrain data passthrough
  */
 Telemetry::Telemetry(DriveTrain *drvt)
@@ -19,8 +19,8 @@ Telemetry::Telemetry(DriveTrain *drvt)
 
 /**
  * @brief Expose the telemetry data packet to the drivetrain so that the drivetrain can populate it with data.
- * 
- * @return SparkMaxPacket* 
+ *
+ * @return SparkMaxPacket*
  */
 SparkMaxPacket *Telemetry::exportTelemetry()
 {
@@ -29,7 +29,7 @@ SparkMaxPacket *Telemetry::exportTelemetry()
 
 /**
  * @brief Main method called in the robots periodic functions to constantly update telemetry data
- * 
+ *
  */
 void Telemetry::runMetrics()
 {
@@ -45,22 +45,22 @@ void Telemetry::runMetrics()
 /**
  * @brief Create a current snapshot of the robots data and store it into a queue for later use
  *
- * 
+ *
  */
 void Telemetry::captureSnapshot()
 {
     new_capture = new Snapshot;
-    new_capture->left_pos = drivetrain_data->encoder_position_1 * drivetrain_data->encoder_position_2 / 2;  // Average data values
-    new_capture->right_pos = drivetrain_data->encoder_position_3 * drivetrain_data->encoder_position_4 / 2; // Average data values
-    new_capture->left_speed = drivetrain_data->motor_power_1 * drivetrain_data->motor_power_2 / 2;          // Average left speed value
-    new_capture->right_speed = drivetrain_data->motor_power_3 * drivetrain_data->motor_power_4 / 2;         // Average right speed value
-    new_capture->x_rot = gyro->GetYaw();                                                                    // Get x rotation
-    instruction_queue.push(new_capture);                                                                    // Add snapshot struct to new_capture
+    new_capture->left_pos = drivetrain_data->left_position;        // Average data values
+    new_capture->right_pos = drivetrain_data->right_position;      // Average data values
+    new_capture->left_speed = drivetrain_data->left_motor_power;   // Average left speed value
+    new_capture->right_speed = drivetrain_data->right_motor_power; // Average right speed value
+    new_capture->x_rot = gyro->GetYaw();                           // Get x rotation
+    instruction_queue.push(new_capture);                           // Add snapshot struct to new_capture
 }
 
 /**
  * @brief Takes data captured by the snapshot and adds it to a doubly linked list that acts as both as queue and a stack
- * 
+ *
  */
 void Telemetry::manageRewind()
 {
@@ -76,7 +76,7 @@ void Telemetry::manageRewind()
 
 /**
  * @brief Destroy the Telemetry:: Telemetry object
- * 
+ *
  */
 Telemetry::~Telemetry()
 {
