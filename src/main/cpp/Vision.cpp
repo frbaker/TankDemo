@@ -1,6 +1,5 @@
 #include "Vision.h"
 
-#include "stdio.h"
 #include <iostream>
 
 Vision::Vision()
@@ -12,21 +11,19 @@ Vision::Vision()
 
 void Vision::test()
 {
-    printf("Entered test\n");
     *result = camera->GetLatestResult();
-    std::cout<<result->HasTargets()<<std::endl;
-    printf("Please\n");
     bool hasTargets = result->HasTargets();
     if (hasTargets)
     {
         *target = result->GetBestTarget();
         // Get information from target.
         double yaw = target->GetYaw();
+        std::cout<<"Yaw: "<<yaw<<std::endl;
         double pitch = target->GetPitch();
         double area = target->GetArea();
         double skew = target->GetSkew();
-        printf("%lf\n",skew);
         int targetID = target->GetFiducialId();
+        std::cout<<"ID: "<<targetID<<std::endl;
         double poseAmbiguity = target->GetPoseAmbiguity();
         units::meter_t range = photonlib::PhotonUtils::CalculateDistanceToTarget(
             CAMERA_HEIGHT, TARGET_HEIGHT, CAMERA_PITCH,
