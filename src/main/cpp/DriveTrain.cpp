@@ -56,9 +56,26 @@ void DriveTrain::setZero()
     right_encoder_2->SetPosition(0.0);
 }
 
+/**
+ * @brief Method to be used with robot snapshots. Does not evaluate relativity to left or right positions
+ * 
+ * @param lpos 
+ * @param rpos 
+ * @param lspd 
+ * @param rspd 
+ * @return true 
+ * @return false 
+ */
 bool DriveTrain::moveTo(double lpos, double rpos, double lspd, double rspd)
 {
-   // if ()
+    bool at_position = false;
+   if(lpos == telemetry_link->left_position && rpos == telemetry_link->right_position){
+    setSpeed(0.0,0.0);//If at position, stop motors
+    at_position = true;
+   }else{
+    setSpeed(lspd,rspd);//If we are not at position, then set motors to the desired speed
+   }
+   return at_position;
 }
 
 /**
@@ -96,7 +113,7 @@ void DriveTrain::updateTelemetry()
     telemetry_link->left_motor_power = left_motor_1->Get();   // Don't average since second motor is just a follower
     telemetry_link->right_motor_power = right_motor_1->Get(); // Don't average since second motor is just a follower
     // Update encoder positions
-    telemetry_link->left_position = left_encoder_1->GetPosition() * left_encoder_2->GetPosition() / 2;    // Average the left side motor values
+    telemetry_link->left_position = left_encoder_1->GetPosition() * left_encoder_2->GetPosition() / 2;    // Average the left side motor values and
     telemetry_link->right_position = right_encoder_1->GetPosition() * right_encoder_2->GetPosition() / 2; // Average the left side motor values
 }
 
