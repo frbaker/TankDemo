@@ -12,7 +12,8 @@ class DriveTrain
 public:
     DriveTrain();  // Ctor
     ~DriveTrain(); // Dtor
-    bool moveTo(double lpos, double rpos, double lspd, double rspd);
+    bool moveTo(double lpos, double rpos);
+    bool snapshotMoveTo(double lpos, double rpos, double lspd, double rspd);
     void setSpeed(double ls, double rs);
     double *getSpeeds();                     // returns the current speeds of each motor
     double *getPositions();                  // Returns the current encoder positions for each motor encoder
