@@ -5,11 +5,12 @@
 #include "Robot.h"
 #include "DriveControl.h"
 #include "Telemetry.h"
-#include <photonlib/PhotonUtils.h>
+#include "Vision.h"
 
 DriveTrain drivetrain;                // Object to control drive motors
 DriveControl controller(&drivetrain); // Create drive control object
 Telemetry data(&drivetrain);          // Reference our drivetrain object
+Vision vision;                        // Object for interfacing with camera
 
 void Robot::RobotInit()
 {
@@ -26,26 +27,6 @@ void Robot::AutonomousInit()
 void Robot::AutonomousPeriodic()
 {
   // Put main auto code here. Called every 20s during auto.
-  
-  
-  photonlib::PhotonPipelineResult result = camera.GetLatestResult();
-  bool hasTargets = result.HasTargets();
-  if (hasTargets){
-    photonlib::PhotonTrackedTarget target = result.GetBestTarget(); 
-    // Get information from target.
-    double yaw = target.GetYaw();
-    double pitch = target.GetPitch();
-    double area = target.GetArea();
-    double skew = target.GetSkew();
-    int targetID = target.GetFiducialId();
-    double poseAmbiguity = target.GetPoseAmbiguity();
-    units::meter_t range = photonlib::PhotonUtils::CalculateDistanceToTarget(
-      CAMERA_HEIGHT, TARGET_HEIGHT, CAMERA_PITCH,
-      units::degree_t{target.GetPitch()});
-
-    //Now Conner can do stuff
-  }
-
   data.runMetrics(); // Constantly update robot position data
 }
 
