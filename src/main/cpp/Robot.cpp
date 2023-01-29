@@ -12,41 +12,45 @@ DriveControl controller(&drivetrain); // Create drive control object
 Telemetry data(&drivetrain);          // Reference our drivetrain object
 Vision vision;                        // Object for interfacing with camera
 
+// Runs once one startup
 void Robot::RobotInit()
 {
   // Link our drivetrain with our telemetry
   drivetrain.loadTelemetry(data.exportTelemetry());
-} // Runs once one startup
-void Robot::RobotPeriodic() {}
-
-void Robot::AutonomousInit()
+}
+// Put code here to be called constantly regardless of robot state
+void Robot::RobotPeriodic()
 {
-  // Put auto startup code here. Runs once on auto start.
-
-} // Runs once on auto start
-void Robot::AutonomousPeriodic()
-{
-  // Put main auto code here. Called every 20s during auto.
-  data.runMetrics(); // Constantly update robot position data
+  vision.test();
 }
 
-void Robot::TeleopInit() {} // Runs once on teleop start
+// Put auto startup code here. Runs once on auto start.
+void Robot::AutonomousInit()
+{
+}
+// Put main auto code here. Called every 20s during auto.
+void Robot::AutonomousPeriodic()
+{
+  data.runMetrics(); // Constantly update robot position data
+}
+// Runs once on teleop start
+void Robot::TeleopInit() {}
+// Put main code here. Called every 20ms by default.
 void Robot::TeleopPeriodic()
 {
-  // Put main code here. Called every 20ms by default.
   controller.teleopController(); // Take input from controllers -- main control during teleop
   data.runMetrics();             // Constantly update robot position data
 
-} // Put main teleop control code here
+}
 
-void Robot::DisabledInit() {}     // Garbage
-void Robot::DisabledPeriodic() {} // Garbage
+void Robot::DisabledInit() {}     // Not used
+void Robot::DisabledPeriodic() {} // Not used
 
-void Robot::TestInit() {}     // Garbage
-void Robot::TestPeriodic() {} // Garbage
+void Robot::TestInit() {}     // Not used
+void Robot::TestPeriodic() {} // Not used
 
-void Robot::SimulationInit() {}     // Garbage
-void Robot::SimulationPeriodic() {} // Garbage
+void Robot::SimulationInit() {}     // Not used
+void Robot::SimulationPeriodic() {} // Not used
 
 #ifndef RUNNING_FRC_TESTS
 int main()
