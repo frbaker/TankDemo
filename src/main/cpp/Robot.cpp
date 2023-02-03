@@ -3,12 +3,15 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "Robot.h"
+#include "DriveTrain.h"
+#include "RobotAuxilary.h"
 #include "DriveControl.h"
 #include "Telemetry.h"
 #include "Vision.h"
 
 DriveTrain drivetrain;                // Object to control drive motors
-DriveControl controller(&drivetrain); // Create drive control object
+RobotAuxilary utilites; //Object to control robot arm and puncher
+DriveControl controller(&drivetrain, &utilites); // Create drive control object
 Telemetry data(&drivetrain);          // Reference our drivetrain object
 Vision vision;                        // Object for interfacing with camera
 
@@ -31,6 +34,7 @@ void Robot::AutonomousInit()
 // Put main auto code here. Called every 20s during auto.
 void Robot::AutonomousPeriodic()
 {
+  utilites.calibrateArm();//Calibrate arm encoder
   data.runMetrics(); // Constantly update robot position data
 }
 // Runs once on teleop start

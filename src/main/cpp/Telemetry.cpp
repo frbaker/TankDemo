@@ -37,7 +37,6 @@ void Telemetry::runMetrics()
     {                                 // Capture a snapshot of the robots data every 100ms
         drivebase->updateTelemetry(); // Load in motor and encoder data from the drivetrain class
         captureSnapshot();            // Capture the updated drivetrain data
-        manageRewind();               // Take data from snapshot and save it to our rewind buffer
     }
     // Do calculations and such here
 }
@@ -55,14 +54,14 @@ void Telemetry::captureSnapshot()
     latest_capture->left_speed = drivetrain_data->left_motor_power;   // Average left speed value
     latest_capture->right_speed = drivetrain_data->right_motor_power; // Average right speed value
     latest_capture->x_rot = gyro->GetYaw();                           // Get x rotation
-    manageRewind();                                                   // Manage our rewind list
+    manageRewindBuffer();                                                   // Manage our rewind list
 }
 
 /**
  * @brief Takes data captured by the snapshot and adds it to a doubly linked list that acts as both as queue and a stack
  *
  */
-void Telemetry::manageRewind()
+void Telemetry::manageRewindBuffer()
 {
     rewind_steps.push_back(latest_capture);
     if (rewind_steps.size() > max_rewind_steps)

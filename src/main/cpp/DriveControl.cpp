@@ -1,18 +1,20 @@
 #include "DriveControl.h"
+#include <algorithm>
 #include <cmath>
 
 #define PI 3.141592653589793
 
 /**
  * @brief Construct a new Drive Control:: Drive Control object
- * 
+ *
  * @param dtobj Takes a pointer to the robot drive train object
  */
-DriveControl::DriveControl(DriveTrain *dtobj)
+DriveControl::DriveControl(DriveTrain *dtobj, RobotAuxilary *auxobj)
 {
     controller_1 = new frc::XboxController(0); // Init main controller
     controller_2 = new frc::XboxController(1); // Init secondary controller
     drivebase = dtobj;                         // Get the drivetrain object
+    utilites = auxobj;                         // Get the auxilary object
     is_tank_drive = true;                      // Start the robot in tank drive mode
     // Timers
     button_grace_period_timer = new Timer(300); // Debounce time in milliseconds
@@ -20,7 +22,7 @@ DriveControl::DriveControl(DriveTrain *dtobj)
 
 /**
  * @brief Main method to handle robot-joystick interaction during teleop
- * 
+ *
  */
 void DriveControl::teleopController()
 {
@@ -38,7 +40,7 @@ void DriveControl::teleopController()
 
 /**
  * @brief Tank drive style implementation
- * 
+ *
  */
 void DriveControl::tankOperation()
 {
@@ -48,7 +50,7 @@ void DriveControl::tankOperation()
 
 /**
  * @brief Traditional drive style implementation
- * 
+ *
  */
 void DriveControl::traditionalDrive()
 {
@@ -77,10 +79,10 @@ void DriveControl::traditionalDrive()
 
 /**
  * @brief Takes joystick input and filters out low values that can be caused by joystick drift
- * 
+ *
  * @param input Data to filter
  * @param threshold Ammount to filter relative to base 0
- * @return double 
+ * @return double
  */
 double DriveControl::filterInput(double input, double threshold)
 {
@@ -96,7 +98,7 @@ double DriveControl::filterInput(double input, double threshold)
 
 /**
  * @brief Handle button input and mappings
- * 
+ *
  */
 void DriveControl::pollButtons()
 {
@@ -108,13 +110,22 @@ void DriveControl::pollButtons()
 
     if (controller_1->GetAButton() & button_grace_period_timer->getTimer())
     {
-        // Template for the a button
+        // Template for the controller 1 a button
+    }
+
+    //CHRAM!!!
+    if(controller_2->GetAButton() && button_grace_period_timer->getTimer()){
+        utilites->chram();//Punch cube
+    }
+
+    if(controller_1->GetXButton() && button_grace_period_timer->getTimer()){
+        utilites->togglePincher();//Toggle pinching the cube
     }
 }
 
 /**
  * @brief Destroy the Drive Control:: Drive Control object
- * 
+ *
  */
 DriveControl::~DriveControl()
 {

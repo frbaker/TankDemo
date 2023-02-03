@@ -3,7 +3,6 @@
 
 // #include <ctre/phoenixpro/TalonFX.hpp>
 #include <rev/CANSparkMAX.h>
-#include <frc/DigitalOutput.h>
 #include "DataPacket.h"
 
 class DriveTrain

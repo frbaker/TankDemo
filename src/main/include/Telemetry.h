@@ -18,7 +18,7 @@ public:
 
 private:
     void captureSnapshot();
-    void manageRewind();
+    void manageRewindBuffer();
     DriveTrain *drivebase; // Object pointer to hold reference to our drive base
     ctre::phoenix::sensors::PigeonIMU *gyro;
     SparkMaxPacket *drivetrain_data; // Holds the robot telemetry data
