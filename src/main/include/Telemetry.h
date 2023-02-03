@@ -5,7 +5,6 @@
 #include <ctre/phoenix/sensors/PigeonIMU.h>
 #include "DataPacket.h"
 #include "Timer.h"
-#include <queue>
 #include <list>
 
 class Telemetry
@@ -34,8 +33,7 @@ private:
         double x_rot;
     };
 
-    struct Snapshot *new_capture; // Holds data from the latest snapshot
-    std::queue<struct Snapshot *> instruction_queue;
+    struct Snapshot *latest_capture; // Holds the robot data from the latest snapshot
     std::list<struct Snapshot *> rewind_steps;
     unsigned int max_rewind_time;  // Sets how long we store data of previous positioning
     unsigned int max_rewind_steps; // Changes depending on poll time to store 5s of past position data

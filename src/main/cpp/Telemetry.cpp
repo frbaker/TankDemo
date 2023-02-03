@@ -49,13 +49,13 @@ void Telemetry::runMetrics()
  */
 void Telemetry::captureSnapshot()
 {
-    new_capture = new Snapshot;
-    new_capture->left_pos = drivetrain_data->left_position;        // Average data values
-    new_capture->right_pos = drivetrain_data->right_position;      // Average data values
-    new_capture->left_speed = drivetrain_data->left_motor_power;   // Average left speed value
-    new_capture->right_speed = drivetrain_data->right_motor_power; // Average right speed value
-    new_capture->x_rot = gyro->GetYaw();                           // Get x rotation
-    instruction_queue.push(new_capture);                           // Add snapshot struct to new_capture
+    latest_capture = new Snapshot;
+    latest_capture->left_pos = drivetrain_data->left_position;        // Average data values
+    latest_capture->right_pos = drivetrain_data->right_position;      // Average data values
+    latest_capture->left_speed = drivetrain_data->left_motor_power;   // Average left speed value
+    latest_capture->right_speed = drivetrain_data->right_motor_power; // Average right speed value
+    latest_capture->x_rot = gyro->GetYaw();                           // Get x rotation
+    manageRewind();                                                   // Manage our rewind list
 }
 
 /**
@@ -64,11 +64,11 @@ void Telemetry::captureSnapshot()
  */
 void Telemetry::manageRewind()
 {
-    rewind_steps.push_back(new_capture);
+    rewind_steps.push_back(latest_capture);
     if (rewind_steps.size() > max_rewind_steps)
     {
-        rewind_steps.pop_front(); // Remove the snapshot from the front of the list. Shouldn't have to worry about memory management,
-                                  // since the popped data will still be pointed to by the instruction queue.
+        delete rewind_steps.front(); // Free the memory allocted to the pointer
+        rewind_steps.pop_front();    // Remove the snapshot pointer from the front of the list.
     }
 }
 
