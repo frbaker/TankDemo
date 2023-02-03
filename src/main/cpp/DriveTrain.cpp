@@ -86,30 +86,6 @@ bool DriveTrain::moveTo(double lpos, double rpos)
     return at_position;
 }
 
-/**
- * @brief Method to be used with robot snapshots. Does not evaluate relativity to left or right positions
- *
- * @param lpos
- * @param rpos
- * @param lspd
- * @param rspd
- * @return true
- * @return false
- */
-bool DriveTrain::snapshotMoveTo(double lpos, double rpos, double lspd, double rspd)
-{
-    bool at_position = false;
-    if (lpos == telemetry_link->left_position && rpos == telemetry_link->right_position)
-    {
-        setSpeed(0.0, 0.0); // If at position, stop motors
-        at_position = true;
-    }
-    else
-    {
-        setSpeed(lspd, rspd); // If we are not at position, then set motors to the desired speed
-    }
-    return at_position;
-}
 
 /**
  * @brief Set the speed of the robots left and right motors

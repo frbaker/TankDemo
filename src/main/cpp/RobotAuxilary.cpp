@@ -7,10 +7,10 @@
  */
 RobotAuxilary::RobotAuxilary()
 {
-    m_arm = new rev::CANSparkMax(9, rev::CANSparkMax::MotorType::kBrushless);      // Init our arm motor
+    m_arm = new rev::CANSparkMax(8, rev::CANSparkMax::MotorType::kBrushless);      // Init our arm motor
     m_arm_encoder = new rev::SparkMaxRelativeEncoder(m_arm->GetEncoder());         // Get our encoder for readings
     m_chram = new frc::DoubleSolenoid(frc::PneumaticsModuleType::CTREPCM, 4, 5);   // Init the Charlie Crammer
-    m_pincher = new frc::DoubleSolenoid(frc::PneumaticsModuleType::CTREPCM, 7, 8); // Init the pincher
+    m_pincher = new frc::DoubleSolenoid(frc::PneumaticsModuleType::CTREPCM, 6, 7); // Init the pincher
     m_arm_limit = new frc::DigitalInput(0);                                        // Init the limit on IO 0
 }
 
