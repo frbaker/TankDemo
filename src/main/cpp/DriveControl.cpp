@@ -15,7 +15,7 @@ DriveControl::DriveControl(DriveTrain *dtobj)
     drivebase = dtobj;                         // Get the drivetrain object
     is_tank_drive = true;                      // Start the robot in tank drive mode
     // Timers
-    button_grace_period_timer = new Timer(300); // Delay time in milliseconds
+    button_grace_period_timer = new Timer(300); // Debounce time in milliseconds
 }
 
 /**
