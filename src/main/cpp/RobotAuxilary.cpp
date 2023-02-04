@@ -1,6 +1,8 @@
 #include "RobotAuxilary.h"
 #include "Timer.h"
 
+#include <iostream>
+
 /**
  * @brief Construct a new Robot Auxilary:: Robot Auxilary object
  * 
@@ -12,6 +14,7 @@ RobotAuxilary::RobotAuxilary()
     m_chram = new frc::DoubleSolenoid(frc::PneumaticsModuleType::CTREPCM, 4, 5);   // Init the Charlie Crammer
     m_pincher = new frc::DoubleSolenoid(frc::PneumaticsModuleType::CTREPCM, 6, 7); // Init the pincher
     m_arm_limit = new frc::DigitalInput(0);                                        // Init the limit on IO 0
+    is_extended = false;//Start with chram retracted
 }
 
 /**
@@ -55,23 +58,26 @@ void RobotAuxilary::togglePincher()
 }
 
 /**
- * @brief Extend the chram and then retract it
+ * @brief Extend the chram
  * 
  */
 void RobotAuxilary::chram()
 {
-    static Timer debounce_timer(50); // 50ms timer
-    static bool is_extended = false;
-
     if (!is_extended)
     {
-        m_chram->Set(frc::DoubleSolenoid::kForward); // Extend chram
+        m_chram->Set(frc::DoubleSolenoid::kReverse); // Extend chram -- Wired where kreverse is extend
         is_extended = true;
     }
+}
 
-    if (is_extended && debounce_timer.getTimer())
+/**
+ * @brief Retract the chram
+ * 
+ */
+void RobotAuxilary::unChram(){
+    if(is_extended)
     {
-        m_chram->Set(frc::DoubleSolenoid::kReverse); // Retract chram
+        m_chram->Set(frc::DoubleSolenoid::kForward); // Retract chram -- Wired where kforward is retract
         is_extended = false;
     }
 }

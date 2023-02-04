@@ -43,6 +43,7 @@ void Robot::TeleopInit() {}
 void Robot::TeleopPeriodic()
 {
   controller.teleopController(); // Take input from controllers -- main control during teleop
+  controller.driveManager();//Handle any robot functions needed outside of driver input
   data.runMetrics();             // Constantly update robot position data
 }
 

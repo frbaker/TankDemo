@@ -13,6 +13,7 @@ public:
     DriveControl(DriveTrain *dtobj, RobotAuxilary *auxobj); // Ctor
     ~DriveControl();                                        // Dtor
     void teleopController();                                // Bundles drive train with other robot opertaions
+    void driveManager();                                    // Handles any robot functionality during teleop that is not controlled by drivers
 
 private:
     void tankOperation();                               // Enables drive train operation in tank mode

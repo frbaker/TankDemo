@@ -13,6 +13,7 @@ public:
     void calibrateArm();
     void togglePincher();
     void chram();
+    void unChram();
 
 private:
     rev::CANSparkMax *m_arm;
@@ -20,6 +21,7 @@ private:
     frc::DoubleSolenoid *m_chram;
     frc::DoubleSolenoid *m_pincher;
     frc::DigitalInput *m_arm_limit;
+    bool is_extended;
 };
 
 #endif // ROBOTAUXILARY_H

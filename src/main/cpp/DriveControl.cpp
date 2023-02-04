@@ -15,7 +15,7 @@ DriveControl::DriveControl(DriveTrain *dtobj, RobotAuxilary *auxobj)
     controller_2 = new frc::XboxController(1); // Init secondary controller
     drivebase = dtobj;                         // Get the drivetrain object
     utilites = auxobj;                         // Get the auxilary object
-    is_tank_drive = true;                      // Start the robot in tank drive mode
+    is_tank_drive = false;                     // Start the robot in tank drive mode
     // Timers
     button_grace_period_timer = new Timer(300); // Debounce time in milliseconds
 }
@@ -35,6 +35,18 @@ void DriveControl::teleopController()
     else
     {                       // else use traditional drive
         traditionalDrive(); // Use traditional drive style
+    }
+}
+
+/**
+ * @brief This function manages any teleop functions not handled by drivers
+ *
+ */
+void DriveControl::driveManager()
+{
+    if (!controller_2->GetAButton())
+    {
+        utilites->unChram(); // Auto retract the chrammer
     }
 }
 
@@ -62,17 +74,17 @@ void DriveControl::traditionalDrive()
     if (y > 0.0)
     { // Forward
         leftpower = std::clamp(std::pow(y, 2.0) + std::sin(PI * x / 4), 0.1, 1.0);
-        rightpower = std::clamp(std::pow(y, 2.0) + std::sin(PI * x / 4), 0.1, 1.0);
+        rightpower = std::clamp(std::pow(y, 2.0) - std::sin(PI * x / 4), 0.1, 1.0);
     }
     else if (y < 0.0)
-    {                                                        // Reverse
-        leftpower = -std::clamp(std::pow(y, 2.0), 0.1, 1.0); // Set negative value for reverse
-        rightpower = -std::clamp(std::pow(y, 2.0), 0.1, 1.0);
+    { // Reverse -- set negative values
+        leftpower = -std::clamp(std::pow(y, 2.0) + std::sin(PI * x / 4), 0.1, 1.0);
+        rightpower = -std::clamp(std::pow(y, 2.0) - std::sin(PI * x / 4), 0.1, 1.0);
     }
     else
     { // 0 power, so spin
-        leftpower = std::pow(-x, 3.0);
-        rightpower = std::pow(x, 3.0);
+        leftpower = -x * .75;
+        rightpower = x * .75;
     }
     drivebase->setSpeed(leftpower, rightpower); // Set power values to the motor
 }
@@ -108,19 +120,21 @@ void DriveControl::pollButtons()
         is_tank_drive = !is_tank_drive; // Swap tank drive state
     }
 
-    if (controller_1->GetAButton() & button_grace_period_timer->getTimer())
+    if (controller_1->GetAButton() && button_grace_period_timer->getTimer())
     {
         // Template for the controller 1 a button
     }
 
-    //CHRAM!!!
-    if(controller_2->GetAButton() && button_grace_period_timer->getTimer()){
-        utilites->chram();//Punch cube
+    // CHRAM!!!
+    if (controller_2->GetAButton() && button_grace_period_timer->getTimer())
+    {
+        utilites->chram(); // Punch cube
     }
 
-    //Pinchers
-    if(controller_1->GetXButton() && button_grace_period_timer->getTimer()){
-        utilites->togglePincher();//Toggle pinching the cube
+    // Pinchers
+    if (controller_2->GetXButton() && button_grace_period_timer->getTimer())
+    {
+        utilites->togglePincher(); // Toggle pinching the cube
     }
 }
 
