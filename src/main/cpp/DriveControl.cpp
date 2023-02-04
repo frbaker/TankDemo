@@ -118,6 +118,7 @@ void DriveControl::pollButtons()
         utilites->chram();//Punch cube
     }
 
+    //Pinchers
     if(controller_1->GetXButton() && button_grace_period_timer->getTimer()){
         utilites->togglePincher();//Toggle pinching the cube
     }

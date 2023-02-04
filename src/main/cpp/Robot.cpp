@@ -9,11 +9,11 @@
 #include "Telemetry.h"
 #include "Vision.h"
 
-DriveTrain drivetrain;                // Object to control drive motors
-RobotAuxilary utilites; //Object to control robot arm and puncher
+DriveTrain drivetrain;                           // Object to control drive motors
+RobotAuxilary utilites;                          // Object to control robot arm and puncher
 DriveControl controller(&drivetrain, &utilites); // Create drive control object
-Telemetry data(&drivetrain);          // Reference our drivetrain object
-Vision vision;                        // Object for interfacing with camera
+Telemetry data(&drivetrain, &utilites);          // Reference our drivetrain object
+Vision vision;                                   // Object for interfacing with camera
 
 // Runs once one startup
 void Robot::RobotInit()
@@ -34,8 +34,8 @@ void Robot::AutonomousInit()
 // Put main auto code here. Called every 20s during auto.
 void Robot::AutonomousPeriodic()
 {
-  utilites.calibrateArm();//Calibrate arm encoder
-  data.runMetrics(); // Constantly update robot position data
+  utilites.calibrateArm(); // Calibrate arm encoder
+  data.runMetrics();       // Constantly update robot position data
 }
 // Runs once on teleop start
 void Robot::TeleopInit() {}
@@ -44,7 +44,6 @@ void Robot::TeleopPeriodic()
 {
   controller.teleopController(); // Take input from controllers -- main control during teleop
   data.runMetrics();             // Constantly update robot position data
-
 }
 
 void Robot::DisabledInit() {}     // Not used

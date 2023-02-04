@@ -2,6 +2,7 @@
 #define TELEMETRY_H
 
 #include "DriveTrain.h"
+#include "RobotAuxilary.h"
 #include <ctre/phoenix/sensors/PigeonIMU.h>
 #include "DataPacket.h"
 #include "Timer.h"
@@ -11,7 +12,7 @@ class Telemetry
 {
 
 public:
-    Telemetry(DriveTrain *drvt);
+    Telemetry(DriveTrain *drvtobj, RobotAuxilary* auxobj);
     ~Telemetry();
     SparkMaxPacket *exportTelemetry(); // Exports the pointer to the telemetry struct
     void runMetrics();                 // Main function for updating data
@@ -20,6 +21,7 @@ private:
     void captureSnapshot();
     void manageRewindBuffer();
     DriveTrain *drivebase; // Object pointer to hold reference to our drive base
+    RobotAuxilary* utilities;//Object pointer to hold refernce to our robot utilities
     ctre::phoenix::sensors::PigeonIMU *gyro;
     SparkMaxPacket *drivetrain_data; // Holds the robot telemetry data
     Timer *snapshot_timer;           // Timer for managing snapshots of robo data

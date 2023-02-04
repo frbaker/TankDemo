@@ -5,9 +5,10 @@
  *
  * @param drvt Takes a pointer to the drivetrain object to enable drivetrain data passthrough
  */
-Telemetry::Telemetry(DriveTrain *drvt)
+Telemetry::Telemetry(DriveTrain *drvtobj, RobotAuxilary *auxobj)
 {
-    drivebase = drvt;                                   // Reference our created drivetrain
+    drivebase = drvtobj;                                // Reference our created drivetrain
+    utilities = auxobj;                                 // Reference our created utilites
     gyro = new ctre::phoenix::sensors::PigeonIMU(16);   // Create our gyro object with can ID 16
     gyro->SetYaw(0.0);                                  // Set the x angle to 0
     drivetrain_data = new SparkMaxPacket;               // Allocate memory for the packet struct
@@ -54,7 +55,7 @@ void Telemetry::captureSnapshot()
     latest_capture->left_speed = drivetrain_data->left_motor_power;   // Average left speed value
     latest_capture->right_speed = drivetrain_data->right_motor_power; // Average right speed value
     latest_capture->x_rot = gyro->GetYaw();                           // Get x rotation
-    manageRewindBuffer();                                                   // Manage our rewind list
+    manageRewindBuffer();                                             // Manage our rewind list
 }
 
 /**
