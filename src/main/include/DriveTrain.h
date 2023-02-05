@@ -1,9 +1,8 @@
 #ifndef DRIVETRAIN_H
 #define DRIVETRAIN_H
 
-// #include <ctre/phoenixpro/TalonFX.hpp>
 #include <rev/CANSparkMAX.h>
-#include "DataPacket.h"
+#include <ctre/phoenix/sensors/PigeonIMU.h>
 
 class DriveTrain
 {
@@ -11,13 +10,14 @@ class DriveTrain
 public:
     DriveTrain();  // Ctor
     ~DriveTrain(); // Dtor
-    bool moveTo(double lpos, double rpos);
-    bool snapshotMoveTo(double lpos, double rpos, double lspd, double rspd);
+    bool moveToForward(double lpos, double rpos);
+    bool moveToBackward(double lpos, double rpos);
     void setSpeed(double ls, double rs);
-    double *getSpeeds();                     // returns the current speeds of each motor
-    double *getPositions();                  // Returns the current encoder positions for each motor encoder
-    void loadTelemetry(SparkMaxPacket *dta); // Get the pointer for the telemetry data packet
-    void updateTelemetry();                  // Fills the telemetry struct with new data
+    double getLeftPosition();
+    double getRightPostion();
+    double getLeftPower();
+    double getRightPower();
+    double getAngle();
 
 private:
     void configureMotors(); // Used to configure motors specifically for this robot
@@ -33,14 +33,9 @@ private:
     rev::SparkMaxRelativeEncoder *right_encoder_1;
     rev::SparkMaxRelativeEncoder *right_encoder_2;
 
-    SparkMaxPacket *telemetry_link; // Used to hold pointer to telemetry link
+    ctre::phoenix::sensors::PigeonIMU *gyro;
 
-    /*TalonFX Motor Controllers
-   ctre::phoenixpro::hardware::TalonFX* leftmotor1;
-   ctre::phoenixpro::hardware::TalonFX* leftmotor2;
-   ctre::phoenixpro::hardware::TalonFX* rightmotor1;
-   ctre::phoenixpro::hardware::TalonFX* rightmotor2;
-    */
+    const double kerror = 10;
 };
 
 #endif // DRIVETRAIN_H

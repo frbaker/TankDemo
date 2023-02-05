@@ -5,21 +5,20 @@
 #include "Robot.h"
 #include "DriveTrain.h"
 #include "RobotAuxilary.h"
+#include "Autonomous.h"
 #include "DriveControl.h"
-#include "Telemetry.h"
 #include "Vision.h"
 
 DriveTrain drivetrain;                           // Object to control drive motors
 RobotAuxilary utilites;                          // Object to control robot arm and puncher
+Autonomous auto_manager(&drivetrain,&utilites);                         // Object to control autonomous
 DriveControl controller(&drivetrain, &utilites); // Create drive control object
-Telemetry data(&drivetrain, &utilites);          // Reference our drivetrain object
 Vision vision;                                   // Object for interfacing with camera
 
 // Runs once one startup
 void Robot::RobotInit()
 {
   // Link our drivetrain with our telemetry
-  drivetrain.loadTelemetry(data.exportTelemetry());
 }
 // Put code here to be called constantly regardless of robot state
 void Robot::RobotPeriodic()
@@ -34,8 +33,9 @@ void Robot::AutonomousInit()
 // Put main auto code here. Called every 20s during auto.
 void Robot::AutonomousPeriodic()
 {
-  utilites.calibrateArm(); // Calibrate arm encoder
-  data.runMetrics();       // Constantly update robot position data
+  // utilites.calibrateArm(); // Calibrate arm encoder
+  //drivetrain.setSpeed(-0.3, -0.3);
+  auto_manager.manageAuto();//Mange what auto is running
 }
 // Runs once on teleop start
 void Robot::TeleopInit() {}
@@ -43,8 +43,7 @@ void Robot::TeleopInit() {}
 void Robot::TeleopPeriodic()
 {
   controller.teleopController(); // Take input from controllers -- main control during teleop
-  controller.driveManager();//Handle any robot functions needed outside of driver input
-  data.runMetrics();             // Constantly update robot position data
+  controller.driveManager();     // Handle any robot functions needed outside of driver input
 }
 
 void Robot::DisabledInit() {}     // Not used
