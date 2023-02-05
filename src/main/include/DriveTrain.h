@@ -52,7 +52,7 @@ private:
     bool at_angle;
 
 
-    const double k_angle_error = 5.0;
+    const double k_angle_error = 1.0;
     const double krevs_per_inch = 1.6146;//Number of revolutions per inch
 };
 

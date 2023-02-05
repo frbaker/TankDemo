@@ -70,12 +70,14 @@ void Autonomous::custom1(){
         
         case 0:
             if(drivetrain->relativeMoveForward(50,50)){
+                utilties->chram();
                 steps++;
                 drivetrain->resetFlags();//Reset the flags to enable further steps
             }
             break;
         case 1:
             if(drivetrain->relativeMoveBackward(50,50)){
+                utilties->unChram();
                 steps++;
                 drivetrain->resetFlags();//Reset the flags to enable further steps
             }
