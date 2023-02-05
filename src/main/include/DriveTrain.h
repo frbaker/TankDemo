@@ -10,14 +10,21 @@ class DriveTrain
 public:
     DriveTrain();  // Ctor
     ~DriveTrain(); // Dtor
-    bool moveToForward(double lpos, double rpos);
-    bool moveToBackward(double lpos, double rpos);
+    bool absoluteMoveForward(double lpos, double rpos);
+    bool absoluteMoveBackward(double lpos, double rpos);
+    bool absoluteTurnCW(double ang);
+    bool absoluteTurnCCW(double ang);
+
+    bool relativeMoveForward(double lpos, double rpos);
+    bool relativeMoveBackward(double lpos, double rpos);
+
     void setSpeed(double ls, double rs);
     double getLeftPosition();
     double getRightPostion();
     double getLeftPower();
     double getRightPower();
     double getAngle();
+    void resetFlags();
 
 private:
     void configureMotors(); // Used to configure motors specifically for this robot
@@ -35,7 +42,17 @@ private:
 
     ctre::phoenix::sensors::PigeonIMU *gyro;
 
-    const double kerror = 10;
+    bool on_init;
+    bool at_position_left;
+    bool at_position_right;
+    double relative_left_pos_zero;
+    double relative_right_pos_zero;
+    double relative_ang_zero;
+    bool at_angle;
+
+
+    const double k_angle_error = 5.0;
+    const double krevs_per_inch = 1.6146;//Number of revolutions per inch
 };
 
 #endif // DRIVETRAIN_H

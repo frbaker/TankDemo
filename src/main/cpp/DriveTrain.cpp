@@ -19,10 +19,11 @@ DriveTrain::DriveTrain()
     left_encoder_2 = new rev::SparkMaxRelativeEncoder(left_motor_2->GetEncoder());
     right_encoder_1 = new rev::SparkMaxRelativeEncoder(right_motor_1->GetEncoder());
     right_encoder_2 = new rev::SparkMaxRelativeEncoder(right_motor_2->GetEncoder());
-    setZero();
     // Gyro
     gyro = new ctre::phoenix::sensors::PigeonIMU(16); // Create our gyro object with can ID 16
-    gyro->SetYaw(0.0);                                // Set the x angle to 0
+                                                      // Zero all sensors
+    setZero();
+    resetFlags(); // Reset movement flags
 }
 
 /**
@@ -51,57 +52,166 @@ void DriveTrain::setZero()
     left_encoder_2->SetPosition(0.0);
     right_encoder_1->SetPosition(0.0);
     right_encoder_2->SetPosition(0.0);
+    gyro->SetYaw(0.0); // Set the x angle to 0
 }
 
-bool DriveTrain::moveToForward(double lpos, double rpos)
+/**
+ * @brief Used after a successful movement command to clear flags and allow movement
+ *
+ */
+void DriveTrain::resetFlags()
 {
-    static bool at_position_left = false;
-    static bool at_position_right = false;
+    on_init = true;
+    at_position_left = false;
+    at_position_right = false;
+    relative_left_pos_zero = 0.0;
+    relative_right_pos_zero = 0.0;
+    relative_ang_zero = 0.0;
+    at_angle = false;
+}
 
-        
-        if (lpos > getLeftPosition() && !at_position_left)
-        {                            // if desired position is behind current encoder position
-            left_motor_1->Set(-0.25); // Left motors forward 75%
-        }else{
-            left_motor_1->Set(0.0);
-            at_position_left = true;
-        }
+bool DriveTrain::absoluteMoveForward(double lpos, double rpos)
+{
+    if (lpos > getLeftPosition() && !at_position_left)
+    {                             // if desired position is behind current encoder position
+        left_motor_1->Set(-0.25); // Left motors forward 75%
+    }
+    else
+    {
+        left_motor_1->Set(0.0);
+        at_position_left = true;
+    }
 
-        if (rpos > getRightPostion() && !at_position_right)
-        {                             // if desired position is behind current encoder position
-            right_motor_1->Set(-0.25); // Right motors forward 75%
-        }else{
-            right_motor_1->Set(0.0);
-            at_position_right = true;
-        }
-        
+    if (rpos > getRightPostion() && !at_position_right)
+    {                              // if desired position is behind current encoder position
+        right_motor_1->Set(-0.25); // Right motors forward 75%
+    }
+    else
+    {
+        right_motor_1->Set(0.0);
+        at_position_right = true;
+    }
+
+    return at_position_left & at_position_right;
+}
+
+bool DriveTrain::absoluteMoveBackward(double lpos, double rpos)
+{
+    if (lpos < getLeftPosition() && !at_position_left)
+    {                            // if desired position is ahead of current encoder position
+        left_motor_1->Set(0.25); // Left motors reverse 75%
+    }
+    else
+    {
+        left_motor_1->Set(0.0);
+        at_position_left = true;
+    }
+
+    if (rpos < getRightPostion() && !at_position_right)
+    {                             // if desired position is ahead of current encoder position
+        right_motor_1->Set(0.25); // Right motors reverse 75%
+    }
+    else
+    {
+        right_motor_1->Set(0.0);
+        at_position_right = true;
+    }
+
+    return at_position_left & at_position_right;
+}
+
+bool DriveTrain::absoluteTurnCW(double ang)
+{
+    if (ang > getAngle() - k_angle_error && ang < getAngle() + k_angle_error)
+    {                   // Turn clockwise to the angle
+        setSpeed(0, 0); // Stop
+        at_angle = true;
+    }
+    else
+    {
+        setSpeed(-.575, .575); // Set left motor forward and right motor backward
+    }
+    return at_angle; // Return if we are at the angle
+}
+
+bool DriveTrain::absoluteTurnCCW(double ang)
+{
+    if (ang > getAngle() - k_angle_error || ang < getAngle() + k_angle_error)
+    {                          // Turn clockwise to the angle
+        setSpeed(.575, -.575); // Set left motor forward and right motor backward
+    }
+    else
+    {
+        setSpeed(0, 0); // Stop
+        at_angle = true;
+    }
+    return at_angle; // Return if we are at the angle
+}
+
+
+bool DriveTrain::relativeMoveForward(double lpos, double rpos){
+    
+    if(on_init){
+        relative_left_pos_zero = getLeftPosition();//Save left encoder position on first call
+        relative_right_pos_zero = getRightPostion();//Save right encoder position on first call
+        on_init = false;//No longer first call
+    }
+
+    if (lpos + relative_left_pos_zero > getLeftPosition() && !at_position_left)
+    {                             // if desired position is behind current encoder position
+        left_motor_1->Set(-0.25); // Left motors forward 75%
+    }
+    else
+    {
+        left_motor_1->Set(0.0);
+        at_position_left = true;
+    }
+
+    if (rpos + relative_right_pos_zero > getRightPostion() && !at_position_right)
+    {                              // if desired position is behind current encoder position
+        right_motor_1->Set(-0.25); // Right motors forward 75%
+    }
+    else
+    {
+        right_motor_1->Set(0.0);
+        at_position_right = true;
+    }
+
+    return at_position_left & at_position_right;
+}
+
+bool DriveTrain::relativeMoveBackward(double lpos, double rpos){
+    
+    if(on_init){
+        relative_left_pos_zero = getLeftPosition();//Save left encoder position on first call
+        relative_right_pos_zero = getRightPostion();//Save right encoder position on first call
+        on_init = false;//No longer first call
+    }
+    
+    if (relative_left_pos_zero - lpos < getLeftPosition() && !at_position_left)
+    {                            // if desired position is ahead of current encoder position
+        left_motor_1->Set(0.25); // Left motors reverse 75%
+    }
+    else
+    {
+        left_motor_1->Set(0.0);
+        at_position_left = true;
+    }
+
+    if (relative_right_pos_zero - rpos < getRightPostion() && !at_position_right)
+    {                             // if desired position is ahead of current encoder position
+        right_motor_1->Set(0.25); // Right motors reverse 75%
+    }
+    else
+    {
+        right_motor_1->Set(0.0);
+        at_position_right = true;
+    }
+
     return at_position_left & at_position_right;
 }
 
 
-bool DriveTrain::moveToBackward(double lpos, double rpos){
-        static bool at_position_left = false;
-    static bool at_position_right = false;
-
-
-        if (lpos < getLeftPosition() && !at_position_left)
-        {                             // if desired position is ahead of current encoder position
-            left_motor_1->Set(0.25); // Left motors reverse 75%
-        }else{
-            left_motor_1->Set(0.0);
-            at_position_left = true;
-        }
-        
-        if (rpos < getRightPostion() && !at_position_right)
-        {                              // if desired position is ahead of current encoder position
-            right_motor_1->Set(0.25); // Right motors reverse 75%
-        }else{
-            right_motor_1->Set(0.0);
-            at_position_right = true;
-        }
-
-    return at_position_left & at_position_right;
-}
 
 
 
@@ -120,26 +230,51 @@ void DriveTrain::setSpeed(double ls, double rs)
     // rightmotor2->Set(rs);//Should be controlled by motor 1
 }
 
+/**
+ * @brief Returns the current encoder reading of the left side motors
+ *
+ * @return double Left encoder position
+ */
 double DriveTrain::getLeftPosition()
 {
     return -(left_encoder_1->GetPosition() + left_encoder_2->GetPosition() / 2);
 }
 
+/**
+ * @brief Returns the current encoder reading of the right side motors
+ *
+ * @return double Right encoder position
+ */
 double DriveTrain::getRightPostion()
 {
     return -(right_encoder_1->GetPosition() + right_encoder_2->GetPosition() / 2);
 }
 
+/**
+ * @brief Returns the current power outpout of the left side motors
+ *
+ * @return double Power output
+ */
 double DriveTrain::getLeftPower()
 {
     return -(left_motor_1->Get() + left_motor_2->Get() / 2);
 }
 
+/**
+ * @brief Returns the current power output of the right side motors
+ *
+ * @return double Power output
+ */
 double DriveTrain::getRightPower()
 {
     return -(right_motor_1->Get() + right_motor_2->Get() / 2);
 }
 
+/**
+ * @brief Returns the angle of the onboard gyro
+ *
+ * @return double Rurns the angle of the gyro: cw direction is positive
+ */
 double DriveTrain::getAngle()
 {
     return -(gyro->GetYaw());

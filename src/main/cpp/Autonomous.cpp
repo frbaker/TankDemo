@@ -40,12 +40,12 @@ void Autonomous::defaultAuto(){
 
     switch(steps){
         case 0:
-            if(drivetrain->moveToForward(310,310)){
+            if(drivetrain->absoluteMoveForward(310,310)){
                 steps++;
             }
             break;
         case 1:
-            if(drivetrain->moveToBackward(270,270)){
+            if(drivetrain->absoluteMoveBackward(270,270)){
                 steps++;
             }
             break;
@@ -61,11 +61,89 @@ void Autonomous::straightForward(double dist){
         std::cout<<"Right Position: "<<drivetrain->getRightPostion()<<std::endl;
         std::cout<<"Angle: "<<drivetrain->getAngle()<<std::endl;
     }
-    drivetrain->moveToForward(dist,dist);
+    drivetrain->absoluteMoveForward(dist,dist);
 }
 
 void Autonomous::custom1(){
-
+    static int steps = 0;
+    switch(steps){
+        
+        case 0:
+            if(drivetrain->relativeMoveForward(50,50)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 1:
+            if(drivetrain->relativeMoveBackward(50,50)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 2:
+            if(drivetrain->absoluteTurnCW(90)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 3:
+            if(drivetrain->relativeMoveForward(50,50)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 4:
+            if(drivetrain->relativeMoveBackward(50,50)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 5:
+            if(drivetrain->absoluteTurnCW(180)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 6:
+            if(drivetrain->relativeMoveForward(50,50)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 7:
+            if(drivetrain->relativeMoveBackward(50,50)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 8:
+            if(drivetrain->absoluteTurnCW(270)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 9:
+            if(drivetrain->relativeMoveForward(50,50)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 10:
+            if(drivetrain->relativeMoveBackward(50,50)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 11:
+            if(drivetrain->absoluteTurnCW(359)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        
+        default:
+            break;
+    }
 }
 
 
