@@ -1,5 +1,6 @@
 #include "DriveTrain.h"
 
+
 /**
  * @brief Construct a new Drive Train:: Drive Train object
  *
@@ -20,12 +21,10 @@ DriveTrain::DriveTrain()
     right_encoder_2 = new rev::SparkMaxRelativeEncoder(right_motor_2->GetEncoder());
     setZero();
 
-    /*TalonFX Motor Controllers
-    leftmotor1 = new ctre::phoenixpro::hardware::TalonFX(0,"");//Leave can name empty for auto init
-    leftmotor2 = new ctre::phoenixpro::hardware::TalonFX(1,"");//Leave can name empty for auto init
-    rightmotor1 = new ctre::phoenixpro::hardware::TalonFX(2,"");//Leave can name empty for auto init
-    rightmotor2 = new ctre::phoenixpro::hardware::TalonFX(3,"");//Leave can name empty for auto init
-    */
+
+    //Gyro
+    gyro = new ctre::phoenix::sensors::PigeonIMU(16);   // Create our gyro object with can ID 16
+    gyro->SetYaw(0.0);                                  // Set the x angle to 0
 }
 
 /**
@@ -54,38 +53,55 @@ void DriveTrain::setZero()
     left_encoder_2->SetPosition(0.0);
     right_encoder_1->SetPosition(0.0);
     right_encoder_2->SetPosition(0.0);
+    gyro->SetYaw(0.0);
 }
 
 bool DriveTrain::moveTo(double lpos, double rpos)
 {
-    bool at_position = false;
-    if (lpos == telemetry_link->left_position && rpos == telemetry_link->right_position)
+
+
+    static bool at_position = false;
+    if (lpos == getLeftPosition() && rpos == getRightPosition())
     {
         setSpeed(0.0, 0.0); // If at position, stop motors
         at_position = true;
     }
 
-    if (lpos < telemetry_link->left_position)
+    if (lpos < getLeftPosition())
     {                             // if desired position is behind current encoder position
-        left_motor_1->Set(-0.75); // Left motors reverse 75%
+        setSpeed(-.1,0.0); // Left motors reverse 75%
     }
-    else if (lpos > telemetry_link->left_position)
+    else if (lpos > getLeftPosition())
     {                            // if desired position is ahead of current encoder position
-        left_motor_1->Set(0.75); // Left motors forward 75%
+        setSpeed(.1,0.0); // Left motors forward 75%
     }
 
-    if (rpos < telemetry_link->right_position)
+    if (rpos < getRightPosition())
     {                              // if desired position is behind current encoder position
-        right_motor_1->Set(-0.75); // Right motors reverse 75%
+        setSpeed(0.0,-.1); // Right motors reverse 75%
     }
-    else if (rpos > telemetry_link->right_position)
+    else if (rpos > getRightPosition())
     {                             // if desired position is ahead of current encoder position
-        right_motor_1->Set(0.75); // Right motors forward 75%
+       setSpeed(0.0,.1); // Right motors forward 75%
     }
-
     return at_position;
 }
 
+
+bool DriveTrain::turnTo(double ang){
+    
+    static bool at_angle = false;
+
+    if(ang == getAngle()){
+        setSpeed(0.0,0.0);
+        at_angle = true;
+    }else if(ang > getAngle()){
+        setSpeed(-.1,.1);
+    }else if (ang < getAngle()){
+        setSpeed(.1,-.1);
+    }
+    return at_angle;
+}
 
 /**
  * @brief Set the speed of the robots left and right motors
@@ -102,28 +118,28 @@ void DriveTrain::setSpeed(double ls, double rs)
     // rightmotor2->Set(rs);//Should be controlled by motor 1
 }
 
-/**
- * @brief Links drivetrain data to the telemetry class
- *
- * @param dta Data packet being sent to the telemetry class
- */
-void DriveTrain::loadTelemetry(SparkMaxPacket *dta)
-{
-    telemetry_link = dta;
+double DriveTrain::getLeftPosition(){
+    return left_encoder_1->GetPosition()+left_encoder_2->GetPosition()/2;//Average of two left ecnoders
 }
 
-/**
- * @brief Fill the data packet being sent with fresh data
- *
- */
-void DriveTrain::updateTelemetry()
-{
-    // Update motor power
-    telemetry_link->left_motor_power = left_motor_1->Get();   // Don't average since second motor is just a follower
-    telemetry_link->right_motor_power = right_motor_1->Get(); // Don't average since second motor is just a follower
-    // Update encoder positions
-    telemetry_link->left_position = left_encoder_1->GetPosition() * left_encoder_2->GetPosition() / 2;    // Average the left side motor values and
-    telemetry_link->right_position = right_encoder_1->GetPosition() * right_encoder_2->GetPosition() / 2; // Average the left side motor values
+double DriveTrain::getRightPosition(){
+    return right_encoder_1->GetPosition()+right_encoder_2->GetPosition()/2;//Average of two right encoders
+}
+
+double DriveTrain::getLeftPower(){
+    return left_motor_1->Get()+left_motor_2->Get()/2;//Average speed of left motors
+}
+
+double DriveTrain::getRightPower(){
+    return right_motor_1->Get()+right_motor_2->Get()/2;//Average speed or right motors
+}
+
+double DriveTrain::getAngle(){
+    return gyro->GetYaw();
+}
+
+double toInches(){
+
 }
 
 /**
@@ -142,4 +158,6 @@ DriveTrain::~DriveTrain()
     delete left_encoder_2;
     delete right_encoder_1;
     delete right_encoder_2;
+    //Gyro
+    delete gyro;
 }

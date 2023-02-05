@@ -1,9 +1,8 @@
 #ifndef DRIVETRAIN_H
 #define DRIVETRAIN_H
 
-// #include <ctre/phoenixpro/TalonFX.hpp>
+#include <ctre/phoenix/sensors/PigeonIMU.h>
 #include <rev/CANSparkMAX.h>
-#include "DataPacket.h"
 
 class DriveTrain
 {
@@ -11,17 +10,21 @@ class DriveTrain
 public:
     DriveTrain();  // Ctor
     ~DriveTrain(); // Dtor
+    void setZero();         // Used to set encoder positions to zero upon object creation
+
     bool moveTo(double lpos, double rpos);
-    bool snapshotMoveTo(double lpos, double rpos, double lspd, double rspd);
+    bool turnTo(double ang);
     void setSpeed(double ls, double rs);
-    double *getSpeeds();                     // returns the current speeds of each motor
-    double *getPositions();                  // Returns the current encoder positions for each motor encoder
-    void loadTelemetry(SparkMaxPacket *dta); // Get the pointer for the telemetry data packet
-    void updateTelemetry();                  // Fills the telemetry struct with new data
+    double getLeftPosition();
+    double getRightPosition();
+    double getLeftPower();
+    double getRightPower();
+    double getAngle();
+    double toInches();
 
 private:
     void configureMotors(); // Used to configure motors specifically for this robot
-    void setZero();         // Used to set encoder positions to zero upon object creation
+    
 
     rev::CANSparkMax *left_motor_1;
     rev::CANSparkMax *left_motor_2;
@@ -33,14 +36,9 @@ private:
     rev::SparkMaxRelativeEncoder *right_encoder_1;
     rev::SparkMaxRelativeEncoder *right_encoder_2;
 
-    SparkMaxPacket *telemetry_link; // Used to hold pointer to telemetry link
+    ctre::phoenix::sensors::PigeonIMU *gyro;
 
-    /*TalonFX Motor Controllers
-   ctre::phoenixpro::hardware::TalonFX* leftmotor1;
-   ctre::phoenixpro::hardware::TalonFX* leftmotor2;
-   ctre::phoenixpro::hardware::TalonFX* rightmotor1;
-   ctre::phoenixpro::hardware::TalonFX* rightmotor2;
-    */
+    const double toInch = 0.62136; // Conversion factor for encoders
 };
 
 #endif // DRIVETRAIN_H

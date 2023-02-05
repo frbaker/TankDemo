@@ -1,7 +1,6 @@
 #include "RobotAuxilary.h"
 #include "Timer.h"
 
-#include <iostream>
 
 /**
  * @brief Construct a new Robot Auxilary:: Robot Auxilary object
@@ -34,6 +33,8 @@ void RobotAuxilary::calibrateArm()
             m_arm_encoder->SetPosition(0.0); // Set the position of the motor to zero;
             is_calibrated = true;
         }
+    }else{
+        m_arm->Set(0.0);
     }
 }
 

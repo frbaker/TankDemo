@@ -3,30 +3,10 @@
 
 #include "DriveTrain.h"
 #include "RobotAuxilary.h"
-#include <ctre/phoenix/sensors/PigeonIMU.h>
-#include "DataPacket.h"
 #include "Timer.h"
 #include <list>
 
-class Telemetry
-{
-
-public:
-    Telemetry(DriveTrain *drvtobj, RobotAuxilary* auxobj);
-    ~Telemetry();
-    SparkMaxPacket *exportTelemetry(); // Exports the pointer to the telemetry struct
-    void runMetrics();                 // Main function for updating data
-
-private:
-    void captureSnapshot();
-    void manageRewindBuffer();
-    DriveTrain *drivebase; // Object pointer to hold reference to our drive base
-    RobotAuxilary* utilities;//Object pointer to hold refernce to our robot utilities
-    ctre::phoenix::sensors::PigeonIMU *gyro;
-    SparkMaxPacket *drivetrain_data; // Holds the robot telemetry data
-    Timer *snapshot_timer;           // Timer for managing snapshots of robo data
-    unsigned int timer_interval;     // How often we should take robot snapshots
-    struct Snapshot
+struct Snapshot
     {
         double left_pos;
         double left_speed;
@@ -34,6 +14,24 @@ private:
         double right_speed;
         double x_rot;
     };
+
+
+class Telemetry
+{
+
+public:
+    Telemetry(DriveTrain *drvtobj, RobotAuxilary* auxobj);
+    ~Telemetry();
+    void runMetrics();                 // Main function for updating data
+    Snapshot* exportSnapshot();//Export captured snapshot data
+
+private:
+    void captureSnapshot();
+    void manageRewindBuffer();
+    DriveTrain *drivebase; // Object pointer to hold reference to our drive base
+    RobotAuxilary* utilities;//Object pointer to hold refernce to our robot utilities
+    Timer *snapshot_timer;           // Timer for managing snapshots of robo data
+    unsigned int timer_interval;     // How often we should take robot snapshots
 
     struct Snapshot *latest_capture; // Holds the robot data from the latest snapshot
     std::list<struct Snapshot *> rewind_steps;
