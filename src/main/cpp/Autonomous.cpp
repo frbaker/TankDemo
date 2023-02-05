@@ -1,89 +1,154 @@
 #include "Autonomous.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 
-/**
- * @brief Construct a new Autonomous:: Autonomous object
- *
- */
-Autonomous::Autonomous(DriveTrain *dvtobj, RobotAuxilary *auxobj)
-{
+#include <iostream>
+
+Autonomous::Autonomous(DriveTrain* dvtobj, RobotAuxilary* auxobj){
     drivetrain = dvtobj;
-    utilities = auxobj;
-    m_auto_picker = new frc::SendableChooser<int>(); // Create memory for our chooser
-    m_auto_picker->SetDefaultOption("Default", 0);
-    m_auto_picker->AddOption("Straight Forward", 1);
-
-    frc::SmartDashboard::PutData("AUTO MODES", m_auto_picker);
-
-    m_relative_left = 0.0;
-    m_relative_right = 0.0;
+    utilties = auxobj;
+    m_chooser = new frc::SendableChooser<int>;//Allocate memory for the sendable chooser
+    m_chooser->SetDefaultOption("Default", 0);
+    m_chooser->AddOption("Straight Forward",1);
+    m_chooser->AddOption("Custom 1", 2);
+    frc::SmartDashboard::PutData(m_chooser);//Put options on smart dashboard
+    print_timer = new Timer(250);//Set a timer for every 250ms for debug printing
 }
 
-void Autonomous::test()
-{
-    drivetrain->setSpeed(-0.1, -0.1);
-}
+void Autonomous::manageAuto(){
+    switch(m_chooser->GetSelected()){
+        case 1:
+            straightForward(310);
+            break;
+        case 2:
+            custom1();
+            break;
+        default:
+            defaultAuto();
+            break;
 
-void Autonomous::runAuto()
-{
-    switch (m_auto_picker->GetSelected())
-    {
-    case 1:
-        straightPath(20);
-        break;
-    case 2:
-    case 3:
-    default:
-        defaultAction(); // Call default action
     }
 }
 
-/**
- * @brief Default action for autonomous
- *
- */
-void Autonomous::defaultAction()
-{
+void Autonomous::defaultAuto(){
+    static int steps = 0;
+    
+    if(print_timer->getTimer()){
+        std::cout<<"Left Position: "<<drivetrain->getLeftPosition()<<std::endl;
+        std::cout<<"Right Position: "<<drivetrain->getRightPostion()<<std::endl;
+        std::cout<<"Angle: "<<drivetrain->getAngle()<<std::endl;
+    }
 
-    static int step_cnt = 0;
-    switch (step_cnt)
-    {
-    case 0:
-        drivetrain->moveTo(-12.8, -12.8);
-        step_cnt++;
-        break;
-    case 1:
-        drivetrain->turnTo(-40);
-        step_cnt++;
-        break;
-    case 2:
-        drivetrain->moveTo(-50.1, -80.1);
-        step_cnt++;
-        break;
-    case 3:
-        drivetrain->turnTo(-1);
-        step_cnt++;
-        break;
-    case 4:
-        drivetrain->moveTo(-321.0, -321.0);
-        step_cnt++;
-        break;
-    default:
-        break;
+    switch(steps){
+        case 0:
+            if(drivetrain->absoluteMoveForward(310,310)){
+                steps++;
+            }
+            break;
+        case 1:
+            if(drivetrain->absoluteMoveBackward(270,270)){
+                steps++;
+            }
+            break;
+        default:
+            break;
+    }
+
+}
+
+void Autonomous::straightForward(double dist){
+    if(print_timer->getTimer()){
+        std::cout<<"Left Position: "<<drivetrain->getLeftPosition()<<std::endl;
+        std::cout<<"Right Position: "<<drivetrain->getRightPostion()<<std::endl;
+        std::cout<<"Angle: "<<drivetrain->getAngle()<<std::endl;
+    }
+    drivetrain->absoluteMoveForward(dist,dist);
+}
+
+void Autonomous::custom1(){
+    static int steps = 0;
+    switch(steps){
+        
+        case 0:
+            if(drivetrain->relativeMoveForward(50,50)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 1:
+            if(drivetrain->relativeMoveBackward(50,50)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 2:
+            if(drivetrain->absoluteTurnCW(90)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 3:
+            if(drivetrain->relativeMoveForward(50,50)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 4:
+            if(drivetrain->relativeMoveBackward(50,50)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 5:
+            if(drivetrain->absoluteTurnCW(180)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 6:
+            if(drivetrain->relativeMoveForward(50,50)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 7:
+            if(drivetrain->relativeMoveBackward(50,50)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 8:
+            if(drivetrain->absoluteTurnCW(270)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 9:
+            if(drivetrain->relativeMoveForward(50,50)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 10:
+            if(drivetrain->relativeMoveBackward(50,50)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 11:
+            if(drivetrain->absoluteTurnCW(359)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        
+        default:
+            break;
     }
 }
 
-/**
- * @brief Moves the robot straight forward until a set distance, then stops
- *
- * @param dist How far in feet the robot should move forward
- */
-void Autonomous::straightPath(double dist)
-{
-    drivetrain->moveTo(dist, dist);
-}
 
-Autonomous::~Autonomous()
-{
-    delete m_auto_picker; // Free
+
+
+Autonomous::~Autonomous(){
+    delete m_chooser;
 }

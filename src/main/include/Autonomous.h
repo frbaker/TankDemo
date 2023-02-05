@@ -1,30 +1,27 @@
 #ifndef AUTONOMOUS_H
 #define AUTONOMOUS_H
 
-#include <frc/smartdashboard/SendableChooser.h>
 #include "DriveTrain.h"
 #include "RobotAuxilary.h"
-#include "Telemetry.h"
+#include "Timer.h"
+#include <frc/SmartDashboard/SendableChooser.h>
 
-class Autonomous
-{
+class Autonomous{
 
-public:
+    public:
     Autonomous(DriveTrain* dvtobj, RobotAuxilary* auxobj);
     ~Autonomous();
-    void runAuto();
-    void test();
+    void manageAuto();
+    void defaultAuto();
+    void straightForward(double dist);
+    void custom1();
 
-private:
-    void defaultAction();
-    void straightPath(double dist);
-
-    frc::SendableChooser<int> *m_auto_picker; // Object pointer for setting up auto selection
-    DriveTrain* drivetrain;//Pointer to drivetrain
-    RobotAuxilary* utilities;//Pointer to robot utilites
-
-    double m_relative_left;//Relative placeholder positions for encoders
-    double m_relative_right;//Relative placeholder positions for encoders
+    private:
+    DriveTrain* drivetrain;
+    RobotAuxilary* utilties;
+    Timer* print_timer;
+    frc::SendableChooser<int>* m_chooser;
+    
 };
 
-#endif // AUTONOMOUS_H
+#endif//AUTONOMOUS

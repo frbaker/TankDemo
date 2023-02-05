@@ -1,8 +1,8 @@
 #ifndef DRIVETRAIN_H
 #define DRIVETRAIN_H
 
-#include <ctre/phoenix/sensors/PigeonIMU.h>
 #include <rev/CANSparkMAX.h>
+#include <ctre/phoenix/sensors/PigeonIMU.h>
 
 class DriveTrain
 {
@@ -10,17 +10,22 @@ class DriveTrain
 public:
     DriveTrain();  // Ctor
     ~DriveTrain(); // Dtor
-    void setZero();         // Used to set encoder positions to zero upon object creation
+    void setZero();
+    bool absoluteMoveForward(double lpos, double rpos);
+    bool absoluteMoveBackward(double lpos, double rpos);
+    bool absoluteTurnCW(double ang);
+    bool absoluteTurnCCW(double ang);
 
-    bool moveTo(double lpos, double rpos);
-    bool turnTo(double ang);
+    bool relativeMoveForward(double lpos, double rpos);
+    bool relativeMoveBackward(double lpos, double rpos);
+
     void setSpeed(double ls, double rs);
     double getLeftPosition();
-    double getRightPosition();
+    double getRightPostion();
     double getLeftPower();
     double getRightPower();
     double getAngle();
-    double toInches();
+    void resetFlags();
 
 private:
     void configureMotors(); // Used to configure motors specifically for this robot
@@ -38,7 +43,17 @@ private:
 
     ctre::phoenix::sensors::PigeonIMU *gyro;
 
-    const double toInch = 0.62136; // Conversion factor for encoders
+    bool on_init;
+    bool at_position_left;
+    bool at_position_right;
+    double relative_left_pos_zero;
+    double relative_right_pos_zero;
+    double relative_ang_zero;
+    bool at_angle;
+
+
+    const double k_angle_error = 5.0;
+    const double krevs_per_inch = 1.6146;//Number of revolutions per inch
 };
 
 #endif // DRIVETRAIN_H

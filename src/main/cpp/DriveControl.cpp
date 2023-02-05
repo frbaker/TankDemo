@@ -1,6 +1,8 @@
 #include "DriveControl.h"
 #include <algorithm>
 #include <cmath>
+#include <iostream>
+
 #define PI 3.141592653589793
 
 #include <iostream>
@@ -123,10 +125,9 @@ void DriveControl::pollButtons()
 
     if (controller_1->GetAButton() && button_grace_period_timer->getTimer())
     {
-        // Template for the controller 1 a button
-            std::cout<<"Left Encoder: "<<drivebase->getLeftPosition()<<std::endl;
-            std::cout<<"Right Encoder: "<<drivebase->getRightPosition()<<std::endl;
-            std::cout<<"Angle: "<<drivebase->getAngle()<<std::endl;
+        std::cout<<"Left Position: "<<drivebase->getLeftPosition()<<std::endl;
+        std::cout<<"Right Position: "<<drivebase->getRightPostion()<<std::endl;
+        std::cout<<"Angle: "<<drivebase->getAngle()<<std::endl;
     }
 
     // CHRAM!!!
