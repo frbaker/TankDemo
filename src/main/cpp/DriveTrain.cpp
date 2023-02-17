@@ -66,81 +66,55 @@ void DriveTrain::resetFlags()
     at_position_right = false;
     relative_left_pos_zero = 0.0;
     relative_right_pos_zero = 0.0;
-    relative_ang_zero = 0.0;
     at_angle = false;
+    relative_ang_zero = 0.0;
 }
 
-bool DriveTrain::absoluteMoveForward(double lpos, double rpos)
+/**
+ * @brief Turns toward an absolute angle: CW = +angle, CCW = -angle
+ *
+ * @param desired_ang angle to turn to
+ * @return true angle reached
+ * @return false angle not yet reached
+ */
+bool DriveTrain::absoluteTurn(double desired_ang)
 {
-    if (lpos > getLeftPosition() && !at_position_left)
-    {                             // if desired position is behind current encoder position
-        left_motor_1->Set(-0.25); // Left motors forward 75%
-    }
-    else
+    if (getAngle() < desired_ang && !at_angle)
     {
-        left_motor_1->Set(0.0);
-        at_position_left = true;
+        // Turn clockwise to the angle
+        if (std::abs(getAngle() - desired_ang) < k_angle_error)
+        {
+            setSpeed(-.1, .1); // Set left motor forward and right motor backward
+            at_angle = true;
+        }
+        else if (std::abs(getAngle() - desired_ang) < 15 * k_angle_error)
+        {
+            setSpeed(-.15, .15); // Set left motor forward and right motor backward
+        }
+        else
+        {
+            setSpeed(-.575, .575); // Set left motor forward and right motor backward
+        }
+    }
+    else if (getAngle() > desired_ang && !at_angle)
+    { // Turn clockwise to the angle
+        // Turn counterclockwise to the angle
+        if (std::abs(getAngle() - desired_ang) < k_angle_error)
+        {
+            setSpeed(.1, -.1); // Set left motor forward and right motor backward
+            at_angle = true;
+        }
+        else if (std::abs(getAngle() - desired_ang) < 15 * k_angle_error)
+        {
+            setSpeed(.15, -.15); // Set left motor forward and right motor backward
+        }
+        else
+        {
+            setSpeed(.575, -.575); // Set left motor forward and right motor backward
+        }
     }
 
-    if (rpos > getRightPostion() && !at_position_right)
-    {                              // if desired position is behind current encoder position
-        right_motor_1->Set(-0.25); // Right motors forward 75%
-    }
-    else
-    {
-        right_motor_1->Set(0.0);
-        at_position_right = true;
-    }
-
-    return at_position_left & at_position_right;
-}
-
-bool DriveTrain::absoluteMoveBackward(double lpos, double rpos)
-{
-    if (lpos < getLeftPosition() && !at_position_left)
-    {                            // if desired position is ahead of current encoder position
-        left_motor_1->Set(0.25); // Left motors reverse 75%
-    }
-    else
-    {
-        left_motor_1->Set(0.0);
-        at_position_left = true;
-    }
-
-    if (rpos < getRightPostion() && !at_position_right)
-    {                             // if desired position is ahead of current encoder position
-        right_motor_1->Set(0.25); // Right motors reverse 75%
-    }
-    else
-    {
-        right_motor_1->Set(0.0);
-        at_position_right = true;
-    }
-
-    return at_position_left & at_position_right;
-}
-
-bool DriveTrain::absoluteTurnCW(double ang)
-{
-    if (ang > getAngle() - k_angle_error && ang < getAngle() + k_angle_error)
-    {                   // Turn clockwise to the angle
-        setSpeed(0, 0); // Stop
-        at_angle = true;
-    }
-    else
-    {
-        setSpeed(-.575, .575); // Set left motor forward and right motor backward
-    }
-    return at_angle; // Return if we are at the angle
-}
-
-bool DriveTrain::absoluteTurnCCW(double ang)
-{
-    if (ang > getAngle() - k_angle_error || ang < getAngle() + k_angle_error)
-    {                          // Turn clockwise to the angle
-        setSpeed(.575, -.575); // Set left motor forward and right motor backward
-    }
-    else
+    if (at_angle)
     {
         setSpeed(0, 0); // Stop
         at_angle = true;
@@ -148,13 +122,14 @@ bool DriveTrain::absoluteTurnCCW(double ang)
     return at_angle; // Return if we are at the angle
 }
 
+bool DriveTrain::relativeMoveForward(double lpos, double rpos)
+{
 
-bool DriveTrain::relativeMoveForward(double lpos, double rpos){
-    
-    if(on_init){
-        relative_left_pos_zero = getLeftPosition();//Save left encoder position on first call
-        relative_right_pos_zero = getRightPostion();//Save right encoder position on first call
-        on_init = false;//No longer first call
+    if (on_init)
+    {
+        relative_left_pos_zero = getLeftPosition();  // Save left encoder position on first call
+        relative_right_pos_zero = getRightPostion(); // Save right encoder position on first call
+        on_init = false;                             // No longer first call
     }
 
     if (lpos + relative_left_pos_zero > getLeftPosition() && !at_position_left)
@@ -180,14 +155,16 @@ bool DriveTrain::relativeMoveForward(double lpos, double rpos){
     return at_position_left & at_position_right;
 }
 
-bool DriveTrain::relativeMoveBackward(double lpos, double rpos){
-    
-    if(on_init){
-        relative_left_pos_zero = getLeftPosition();//Save left encoder position on first call
-        relative_right_pos_zero = getRightPostion();//Save right encoder position on first call
-        on_init = false;//No longer first call
+bool DriveTrain::relativeMoveBackward(double lpos, double rpos)
+{
+
+    if (on_init)
+    {
+        relative_left_pos_zero = getLeftPosition();  // Save left encoder position on first call
+        relative_right_pos_zero = getRightPostion(); // Save right encoder position on first call
+        on_init = false;                             // No longer first call
     }
-    
+
     if (relative_left_pos_zero - lpos < getLeftPosition() && !at_position_left)
     {                            // if desired position is ahead of current encoder position
         left_motor_1->Set(0.25); // Left motors reverse 75%
@@ -210,10 +187,6 @@ bool DriveTrain::relativeMoveBackward(double lpos, double rpos){
 
     return at_position_left & at_position_right;
 }
-
-
-
-
 
 /**
  * @brief Set the speed of the robots left and right motors
@@ -299,3 +272,57 @@ DriveTrain::~DriveTrain()
     // Gyro
     delete gyro;
 }
+
+/*Graveyard
+
+bool DriveTrain::absoluteMoveForward(double lpos, double rpos)
+{
+    if (lpos > getLeftPosition() && !at_position_left)
+    {                             // if desired position is behind current encoder position
+        left_motor_1->Set(-0.25); // Left motors forward 75%
+    }
+    else
+    {
+        left_motor_1->Set(0.0);
+        at_position_left = true;
+    }
+
+    if (rpos > getRightPostion() && !at_position_right)
+    {                              // if desired position is behind current encoder position
+        right_motor_1->Set(-0.25); // Right motors forward 75%
+    }
+    else
+    {
+        right_motor_1->Set(0.0);
+        at_position_right = true;
+    }
+
+    return at_position_left & at_position_right;
+}
+
+bool DriveTrain::absoluteMoveBackward(double lpos, double rpos)
+{
+    if (lpos < getLeftPosition() && !at_position_left)
+    {                            // if desired position is ahead of current encoder position
+        left_motor_1->Set(0.25); // Left motors reverse 75%
+    }
+    else
+    {
+        left_motor_1->Set(0.0);
+        at_position_left = true;
+    }
+
+    if (rpos < getRightPostion() && !at_position_right)
+    {                             // if desired position is ahead of current encoder position
+        right_motor_1->Set(0.25); // Right motors reverse 75%
+    }
+    else
+    {
+        right_motor_1->Set(0.0);
+        at_position_right = true;
+    }
+
+    return at_position_left & at_position_right;
+}
+
+*/

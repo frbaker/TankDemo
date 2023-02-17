@@ -11,11 +11,7 @@ public:
     DriveTrain();  // Ctor
     ~DriveTrain(); // Dtor
     void setZero();
-    bool absoluteMoveForward(double lpos, double rpos);
-    bool absoluteMoveBackward(double lpos, double rpos);
-    bool absoluteTurnCW(double ang);
-    bool absoluteTurnCCW(double ang);
-
+    bool absoluteTurn(double desired_ang);
     bool relativeMoveForward(double lpos, double rpos);
     bool relativeMoveBackward(double lpos, double rpos);
 
@@ -29,7 +25,6 @@ public:
 
 private:
     void configureMotors(); // Used to configure motors specifically for this robot
-    
 
     rev::CANSparkMax *left_motor_1;
     rev::CANSparkMax *left_motor_2;
@@ -51,9 +46,15 @@ private:
     double relative_ang_zero;
     bool at_angle;
 
-
     const double k_angle_error = 1.0;
-    const double krevs_per_inch = 1.6146;//Number of revolutions per inch
+    const double krevs_per_inch = 1.6146; // Number of revolutions per inch
 };
 
 #endif // DRIVETRAIN_H
+
+/*Graveyard
+ bool absoluteMoveForward(double lpos, double rpos);
+    bool absoluteMoveBackward(double lpos, double rpos);
+
+
+*/

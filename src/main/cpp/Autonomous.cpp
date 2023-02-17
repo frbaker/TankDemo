@@ -40,12 +40,12 @@ void Autonomous::defaultAuto(){
 
     switch(steps){
         case 0:
-            if(drivetrain->absoluteMoveForward(310,310)){
+            if(drivetrain->relativeMoveForward(310,310)){
                 steps++;
             }
             break;
         case 1:
-            if(drivetrain->absoluteMoveBackward(270,270)){
+            if(drivetrain->relativeMoveBackward(270,270)){
                 steps++;
             }
             break;
@@ -61,7 +61,7 @@ void Autonomous::straightForward(double dist){
         std::cout<<"Right Position: "<<drivetrain->getRightPostion()<<std::endl;
         std::cout<<"Angle: "<<drivetrain->getAngle()<<std::endl;
     }
-    drivetrain->absoluteMoveForward(dist,dist);
+    drivetrain->relativeMoveForward(dist,dist);
 }
 
 void Autonomous::custom1(){
@@ -83,7 +83,7 @@ void Autonomous::custom1(){
             }
             break;
         case 2:
-            if(drivetrain->absoluteTurnCW(90)){
+            if(drivetrain->absoluteTurn(-90)){
                 steps++;
                 drivetrain->resetFlags();//Reset the flags to enable further steps
             }
@@ -101,7 +101,7 @@ void Autonomous::custom1(){
             }
             break;
         case 5:
-            if(drivetrain->absoluteTurnCW(180)){
+            if(drivetrain->absoluteTurn(-180)){
                 steps++;
                 drivetrain->resetFlags();//Reset the flags to enable further steps
             }
@@ -119,7 +119,7 @@ void Autonomous::custom1(){
             }
             break;
         case 8:
-            if(drivetrain->absoluteTurnCW(270)){
+            if(drivetrain->absoluteTurn(-270)){
                 steps++;
                 drivetrain->resetFlags();//Reset the flags to enable further steps
             }
@@ -137,7 +137,7 @@ void Autonomous::custom1(){
             }
             break;
         case 11:
-            if(drivetrain->absoluteTurnCW(359)){
+            if(drivetrain->absoluteTurn(-360)){
                 steps++;
                 drivetrain->resetFlags();//Reset the flags to enable further steps
             }
