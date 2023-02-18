@@ -62,6 +62,7 @@ void DriveTrain::setZero()
 void DriveTrain::resetFlags()
 {
     on_init = true;
+    on_init_level2 = true;
     at_position_left = false;
     at_position_right = false;
     relative_left_pos_zero = 0.0;
@@ -121,6 +122,18 @@ bool DriveTrain::absoluteTurn(double desired_ang)
     }
     return at_angle; // Return if we are at the angle
 }
+
+
+
+bool DriveTrain::relativeTurn(double desired_ang){
+    if(on_init_level2){
+        relative_ang_zero = getAngle();//Set our relative angle zero to current robot angle
+        on_init_level2 = false;
+    }
+    return absoluteTurn(relative_ang_zero + desired_ang);
+}
+
+
 
 bool DriveTrain::relativeMoveForward(double lpos, double rpos)
 {

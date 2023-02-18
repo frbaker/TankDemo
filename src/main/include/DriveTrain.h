@@ -12,6 +12,7 @@ public:
     ~DriveTrain(); // Dtor
     void setZero();
     bool absoluteTurn(double desired_ang);
+    bool relativeTurn(double desired_ang);
     bool relativeMoveForward(double lpos, double rpos);
     bool relativeMoveBackward(double lpos, double rpos);
 
@@ -39,6 +40,7 @@ private:
     ctre::phoenix::sensors::PigeonIMU *gyro;
 
     bool on_init;
+    bool on_init_level2;
     bool at_position_left;
     bool at_position_right;
     double relative_left_pos_zero;

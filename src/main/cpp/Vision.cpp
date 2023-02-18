@@ -7,6 +7,7 @@ Vision::Vision()
     camera = new photonlib::PhotonCamera("OV5647");
     result = new photonlib::PhotonPipelineResult;
     target = new photonlib::PhotonTrackedTarget;
+    yaw = 0.0;
 }
 
 void Vision::test()
@@ -17,20 +18,24 @@ void Vision::test()
     {
         *target = result->GetBestTarget();
         // Get information from target.
-        double yaw = target->GetYaw();
+        yaw = target->GetYaw();
         //std::cout<<"Yaw: "<<yaw<<std::endl;
-        double pitch = target->GetPitch();
-        double area = target->GetArea();
-        double skew = target->GetSkew();
-        int targetID = target->GetFiducialId();
+        //double pitch = target->GetPitch();
+        //double area = target->GetArea();
+        //double skew = target->GetSkew();
+        //int targetID = target->GetFiducialId();
         //std::cout<<"ID: "<<targetID<<std::endl;
-        double poseAmbiguity = target->GetPoseAmbiguity();
-        units::meter_t range = photonlib::PhotonUtils::CalculateDistanceToTarget(
-            CAMERA_HEIGHT, TARGET_HEIGHT, CAMERA_PITCH,
-            units::degree_t{target->GetPitch()});
+       // double poseAmbiguity = target->GetPoseAmbiguity();
+       // units::meter_t range = photonlib::PhotonUtils::CalculateDistanceToTarget(
+        //    CAMERA_HEIGHT, TARGET_HEIGHT, CAMERA_PITCH,
+       //     units::degree_t{target->GetPitch()});
 
         // Now Conner can do stuff
     }
+}
+
+double Vision::getYaw(){
+    return yaw;
 }
 
 /**

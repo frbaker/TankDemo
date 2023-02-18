@@ -83,7 +83,7 @@ void Autonomous::custom1(){
             }
             break;
         case 2:
-            if(drivetrain->absoluteTurn(-90)){
+            if(drivetrain->relativeTurn(-90)){
                 steps++;
                 drivetrain->resetFlags();//Reset the flags to enable further steps
             }
@@ -101,7 +101,7 @@ void Autonomous::custom1(){
             }
             break;
         case 5:
-            if(drivetrain->absoluteTurn(-180)){
+            if(drivetrain->relativeTurn(-180)){
                 steps++;
                 drivetrain->resetFlags();//Reset the flags to enable further steps
             }

@@ -11,9 +11,9 @@
 
 DriveTrain drivetrain;                           // Object to control drive motors
 RobotAuxilary utilites;                          // Object to control robot arm and puncher
-Autonomous auto_manager(&drivetrain,&utilites);                         // Object to control autonomous
-DriveControl controller(&drivetrain, &utilites); // Create drive control object
 Vision vision;                                   // Object for interfacing with camera
+Autonomous auto_manager(&drivetrain,&utilites);                         // Object to control autonomous
+DriveControl controller(&drivetrain, &utilites, &vision); // Create drive control object
 
 // Runs once one startup
 void Robot::RobotInit()
@@ -45,6 +45,7 @@ void Robot::TeleopPeriodic()
 {
   controller.teleopController(); // Take input from controllers -- main control during teleop
   controller.driveManager();     // Handle any robot functions needed outside of driver input
+  vision.test();
 }
 
 void Robot::DisabledInit() {}     // Not used
