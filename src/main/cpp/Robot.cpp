@@ -45,7 +45,7 @@ void Robot::TeleopPeriodic()
 {
   controller.teleopController(); // Take input from controllers -- main control during teleop
   controller.driveManager();     // Handle any robot functions needed outside of driver input
-  vision.test();
+  vision.run();
 }
 
 void Robot::DisabledInit() {}     // Not used

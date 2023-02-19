@@ -12,8 +12,8 @@ class Vision
 {
 public:
     Vision();
-    void test();
-    double getYaw();
+    void run();
+    double getCurrentYaw();
     ~Vision();
 
 private:
@@ -21,7 +21,8 @@ private:
     photonlib::PhotonPipelineResult *result;
     photonlib::PhotonTrackedTarget *target;
 
-    double yaw;
+    double current_yaw;
+    double stored_yaw;
 
     // TODO - change all of these to appropriate settings once we have camera mounted
     const units::meter_t CAMERA_HEIGHT = 22_in;    // camera height on robot

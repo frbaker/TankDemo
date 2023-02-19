@@ -4,13 +4,14 @@
 #include <frc/XboxController.h>
 #include "DriveTrain.h"    //Header for all of our drive control and motors
 #include "RobotAuxilary.h" //Header for robots arm and puncher, and ect
+#include "Vision.h"
 #include "Timer.h"         //Self made simple timer
 
 class DriveControl
 {
 
 public:
-    DriveControl(DriveTrain *dtobj, RobotAuxilary *auxobj); // Ctor
+    DriveControl(DriveTrain *dtobj, RobotAuxilary *auxobj, Vision *camobj); // Ctor
     ~DriveControl();                                        // Dtor
     void teleopController();                                // Bundles drive train with other robot opertaions
     void driveManager();                                    // Handles any robot functionality during teleop that is not controlled by drivers
@@ -24,10 +25,13 @@ private:
     // Heap
     DriveTrain *drivebase;             // Variable for holding drive train object
     RobotAuxilary *utilites;           // Variable for holding robot utilities like arm and chrammer
+    Vision *camera;//Variable for accessing robo cam data
     frc::XboxController *controller_1; // Main Controller
     frc::XboxController *controller_2; // Secondary Controller
     // Stack
     bool is_tank_drive; // variable to hold drive style
+    bool is_turning;
+    int turn_mode;
     // Timers
     Timer *button_grace_period_timer;
 };

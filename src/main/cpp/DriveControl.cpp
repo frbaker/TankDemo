@@ -5,20 +5,21 @@
 
 #define PI 3.141592653589793
 
-#include <iostream>
-
 /**
  * @brief Construct a new Drive Control:: Drive Control object
  *
  * @param dtobj Takes a pointer to the robot drive train object
  */
-DriveControl::DriveControl(DriveTrain *dtobj, RobotAuxilary *auxobj)
+DriveControl::DriveControl(DriveTrain *dtobj, RobotAuxilary *auxobj, Vision *camobj)
 {
     controller_1 = new frc::XboxController(0); // Init main controller
     controller_2 = new frc::XboxController(1); // Init secondary controller
     drivebase = dtobj;                         // Get the drivetrain object
     utilites = auxobj;                         // Get the auxilary object
-    is_tank_drive = false;                     // Start the robot in tank drive mode
+    camera = camobj;
+    is_tank_drive = false; // Start the robot in tank drive mode
+    is_turning = false; //Start that we are not turning
+    turn_mode = 0; //Start that we are neither intending to turn cw or ccw
     // Timers
     button_grace_period_timer = new Timer(300); // Debounce time in milliseconds
 }
@@ -60,7 +61,9 @@ void DriveControl::driveManager()
 void DriveControl::tankOperation()
 {
     // Use tank drive and ramp motor power output by squaring the controller input to form a nice curve
-    drivebase->setSpeed(std::pow(filterInput(controller_1->GetLeftY(), 0.175), 3.0), std::pow(filterInput(controller_1->GetRightY(), 0.175), 3.0));
+    if(!is_turning){
+    drivebase->setSpeed(std::pow(filterInput(controller_1->GetLeftY(), 0.25), 3.0), std::pow(filterInput(controller_1->GetRightY(), 0.25), 3.0));
+    }
 }
 
 /**
@@ -69,8 +72,8 @@ void DriveControl::tankOperation()
  */
 void DriveControl::traditionalDrive()
 {
-    double y = filterInput(controller_1->GetLeftY(), 0.175);  // Get the overall power value after filtering the deadband
-    double x = filterInput(controller_1->GetRightX(), 0.175); // Get the steering value multiplier after filtering the deadband
+    double y = filterInput(controller_1->GetLeftY(), 0.25);  // Get the overall power value after filtering the deadband
+    double x = filterInput(controller_1->GetRightX(), 0.25); // Get the steering value multiplier after filtering the deadband
     double leftpower = 0.;
     double rightpower = 0.;
 
@@ -89,7 +92,9 @@ void DriveControl::traditionalDrive()
         leftpower = -x * .75;
         rightpower = x * .75;
     }
+    if(!is_turning){
     drivebase->setSpeed(leftpower, rightpower); // Set power values to the motor
+    }
 }
 
 /**
@@ -125,10 +130,61 @@ void DriveControl::pollButtons()
 
     if (controller_1->GetAButton() && button_grace_period_timer->getTimer())
     {
-        std::cout<<"Left Position: "<<drivebase->getLeftPosition()<<std::endl;
-        std::cout<<"Right Position: "<<drivebase->getRightPostion()<<std::endl;
-        std::cout<<"Angle: "<<drivebase->getAngle()<<std::endl;
+        std::cout << "Left Position: " << drivebase->getLeftPosition() << std::endl;
+        std::cout << "Right Position: " << drivebase->getRightPostion() << std::endl;
+        std::cout << "Angle: " << drivebase->getAngle() << std::endl;
     }
+
+
+    /* if(controller_1->GetXButton()){
+        while(!drivebase->relativeTurn(camera->getStoredYaw())){}
+            drivebase->resetFlags();
+            camera->updateStoredYaw();
+    } */
+    /*if(controller_1->GetXButton()){
+        double ty = camera->getCurrentYaw();
+        if (ty > 0 ){
+            drivebase->turn(ty*.136);
+        }
+        else{
+            drivebase->turn(ty*-.136);
+        }
+    }*/
+
+
+    if (controller_1->GetLeftBumper() && button_grace_period_timer->getTimer())
+    {
+        is_turning = true;
+        turn_mode = -1;// We are turning ccw
+    }else if (controller_1->GetRightBumper() && button_grace_period_timer->getTimer())
+    {
+        is_turning = true;
+        turn_mode = 1;// We are turning cw
+    }else if(controller_1->GetXButton() && button_grace_period_timer->getTimer()){
+        is_turning = true;
+        turn_mode = 2;
+    }
+
+    if(is_turning && turn_mode == 1){
+        if(drivebase->relativeTurn(90)){
+            drivebase->resetFlags();
+            is_turning = false;
+            turn_mode = 0;
+        }
+    }else if(is_turning && turn_mode == -1){
+        if(drivebase->relativeTurn(-90)){
+            drivebase->resetFlags();
+            is_turning = false;
+            turn_mode = 0;
+        }
+    }else if(is_turning && turn_mode == 2){
+        if(drivebase->relativeTurn(camera->getCurrentYaw())){
+            drivebase->resetFlags();
+            is_turning = false;
+            turn_mode = 0;
+        }
+    }
+    
 
     // CHRAM!!!
     if (controller_2->GetAButton() && button_grace_period_timer->getTimer())

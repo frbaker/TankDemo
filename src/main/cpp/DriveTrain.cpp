@@ -133,8 +133,6 @@ bool DriveTrain::relativeTurn(double desired_ang){
     return absoluteTurn(relative_ang_zero + desired_ang);
 }
 
-
-
 bool DriveTrain::relativeMoveForward(double lpos, double rpos)
 {
 
