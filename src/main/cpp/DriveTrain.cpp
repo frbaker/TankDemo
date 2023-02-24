@@ -39,6 +39,7 @@ void DriveTrain::configureMotors()
     //
     left_motor_2->Follow(*left_motor_1);   // Have to dereference pointer since function is defined as pass by reference, so we need to
     right_motor_2->Follow(*right_motor_1); // pass the address of the object, not the address of the pointer
+    setCoastMode();//Set our robot to start in coast mode
 }
 
 /**
@@ -197,6 +198,18 @@ bool DriveTrain::relativeMoveBackward(double lpos, double rpos)
     }
 
     return at_position_left & at_position_right;
+}
+
+
+void DriveTrain::setCoastMode(){
+    left_motor_1->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+    right_motor_1->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+}
+
+
+void DriveTrain::setBreakMode(){
+    left_motor_1->SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+    right_motor_1->SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
 }
 
 /**

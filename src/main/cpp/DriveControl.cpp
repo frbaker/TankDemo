@@ -20,6 +20,7 @@ DriveControl::DriveControl(DriveTrain *dtobj, RobotAuxilary *auxobj, Vision *cam
     is_tank_drive = false; // Start the robot in tank drive mode
     is_turning = false;    // Start that we are not turning
     turn_mode = 0;         // Start that we are neither intending to turn cw or ccw
+    coast_mode = true; //Start in coast mode
     // Timers
     button_grace_period_timer = new Timer(300); // Debounce time in milliseconds
 }
