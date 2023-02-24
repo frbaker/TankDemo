@@ -2,6 +2,7 @@
 #define ROBOTAUXILARY_H
 
 #include <frc/Doublesolenoid.h>
+#include <frc/Solenoid.h>
 #include <rev/CANSparkMax.h>
 #include <frc/DigitalInput.h>
 
@@ -18,7 +19,7 @@ public:
 private:
     rev::CANSparkMax *m_arm;
     rev::SparkMaxRelativeEncoder *m_arm_encoder;
-    frc::DoubleSolenoid *m_chram;
+    frc::Solenoid *m_chram;
     frc::DoubleSolenoid *m_pincher;
     frc::DigitalInput *m_arm_limit;
     bool is_extended;

@@ -134,6 +134,16 @@ void DriveControl::pollButtons()
         is_turning = false; // Yield control back to the driver from auto turning or cube alignment
     }
 
+
+    if(controller_1->GetAButton() && button_grace_period_timer->getTimer()){
+        drivebase->setCoastMode();//Set robot to coast mode on A button push
+    }
+
+    if(controller_1->GetAButton() && button_grace_period_timer->getTimer()){
+        drivebase->setBreakMode();//Set robot to break mode on B button push. Used to hold robot on ramp during endgame
+    }
+
+
     // Change drive styles
     if (controller_1->GetBackButton() && controller_1->GetStartButton() && button_grace_period_timer->getTimer())
     {                                   // Swap drive modes if start and back button are pushed simultaneously

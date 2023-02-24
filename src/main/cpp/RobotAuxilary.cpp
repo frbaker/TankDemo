@@ -10,8 +10,8 @@ RobotAuxilary::RobotAuxilary()
 {
     m_arm = new rev::CANSparkMax(8, rev::CANSparkMax::MotorType::kBrushless);      // Init our arm motor
     m_arm_encoder = new rev::SparkMaxRelativeEncoder(m_arm->GetEncoder());         // Get our encoder for readings
-    m_chram = new frc::DoubleSolenoid(frc::PneumaticsModuleType::CTREPCM, 4, 5);   // Init the Charlie Crammer
-    m_pincher = new frc::DoubleSolenoid(frc::PneumaticsModuleType::CTREPCM, 6, 7); // Init the pincher
+    m_chram = new frc::Solenoid(frc::PneumaticsModuleType::CTREPCM, 6);   // Init the Charlie Crammer
+    m_pincher = new frc::DoubleSolenoid(frc::PneumaticsModuleType::CTREPCM, 4,5); // Init the pincher
     m_arm_limit = new frc::DigitalInput(0);                                        // Init the limit on IO 0
     is_extended = false;//Start with chram retracted
 }
@@ -66,7 +66,7 @@ void RobotAuxilary::chram()
 {
     if (!is_extended)
     {
-        m_chram->Set(frc::DoubleSolenoid::kReverse); // Extend chram -- Wired where kreverse is extend
+        m_chram->Set(true); // Extend chram -- Solenoid on
         is_extended = true;
     }
 }
@@ -78,7 +78,7 @@ void RobotAuxilary::chram()
 void RobotAuxilary::unChram(){
     if(is_extended)
     {
-        m_chram->Set(frc::DoubleSolenoid::kForward); // Retract chram -- Wired where kforward is retract
+        m_chram->Set(false); // Retract chram -- Solenoid off
         is_extended = false;
     }
 }
