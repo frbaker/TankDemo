@@ -32,6 +32,7 @@ private:
     bool is_tank_drive; // variable to hold drive style
     bool is_turning;
     int turn_mode;
+    bool coast_mode;//Holds whether the motors should engage breaking or coast mode
     // Timers
     Timer *button_grace_period_timer;
 };

@@ -16,6 +16,8 @@ public:
     bool relativeMoveForward(double lpos, double rpos);
     bool relativeMoveBackward(double lpos, double rpos);
 
+    void setCoastMode();
+    void setBreakMode();
     void setSpeed(double ls, double rs);
     double getLeftPosition();
     double getRightPostion();

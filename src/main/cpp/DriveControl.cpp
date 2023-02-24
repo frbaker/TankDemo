@@ -18,8 +18,9 @@ DriveControl::DriveControl(DriveTrain *dtobj, RobotAuxilary *auxobj, Vision *cam
     utilites = auxobj;                         // Get the auxilary object
     camera = camobj;
     is_tank_drive = false; // Start the robot in tank drive mode
-    is_turning = false; //Start that we are not turning
-    turn_mode = 0; //Start that we are neither intending to turn cw or ccw
+    is_turning = false;    // Start that we are not turning
+    turn_mode = 0;         // Start that we are neither intending to turn cw or ccw
+    coast_mode = true; //Start in coast mode
     // Timers
     button_grace_period_timer = new Timer(300); // Debounce time in milliseconds
 }
@@ -61,8 +62,9 @@ void DriveControl::driveManager()
 void DriveControl::tankOperation()
 {
     // Use tank drive and ramp motor power output by squaring the controller input to form a nice curve
-    if(!is_turning){
-    drivebase->setSpeed(std::pow(filterInput(controller_1->GetLeftY(), 0.25), 3.0), std::pow(filterInput(controller_1->GetRightY(), 0.25), 3.0));
+    if (!is_turning)
+    {
+        drivebase->setSpeed(std::pow(filterInput(controller_1->GetLeftY(), 0.25), 3.0), std::pow(filterInput(controller_1->GetRightY(), 0.25), 3.0));
     }
 }
 
@@ -92,8 +94,9 @@ void DriveControl::traditionalDrive()
         leftpower = -x * .75;
         rightpower = x * .75;
     }
-    if(!is_turning){
-    drivebase->setSpeed(leftpower, rightpower); // Set power values to the motor
+    if (!is_turning)
+    {
+        drivebase->setSpeed(leftpower, rightpower); // Set power values to the motor
     }
 }
 
@@ -122,69 +125,64 @@ double DriveControl::filterInput(double input, double threshold)
  */
 void DriveControl::pollButtons()
 {
+
+    if (filterInput(controller_1->GetLeftY, drift_comp) != 0.0 ||
+        filterInput(controller_1->GetLeftX, drift_comp) != 0.0 ||
+        filterInput(controller_1->GetRightY, drift_comp) != 0.0 ||
+        filterInput(controller_1->GetRightY, drift_comp) != 0.0)
+    {
+        is_turning = false; // Yield control back to the driver from auto turning or cube alignment
+    }
+
     // Change drive styles
     if (controller_1->GetBackButton() && controller_1->GetStartButton() && button_grace_period_timer->getTimer())
     {                                   // Swap drive modes if start and back button are pushed simultaneously
         is_tank_drive = !is_tank_drive; // Swap tank drive state
     }
 
-    if (controller_1->GetAButton() && button_grace_period_timer->getTimer())
-    {
-        std::cout << "Left Position: " << drivebase->getLeftPosition() << std::endl;
-        std::cout << "Right Position: " << drivebase->getRightPostion() << std::endl;
-        std::cout << "Angle: " << drivebase->getAngle() << std::endl;
-    }
-
-
-    /* if(controller_1->GetXButton()){
-        while(!drivebase->relativeTurn(camera->getStoredYaw())){}
-            drivebase->resetFlags();
-            camera->updateStoredYaw();
-    } */
-    /*if(controller_1->GetXButton()){
-        double ty = camera->getCurrentYaw();
-        if (ty > 0 ){
-            drivebase->turn(ty*.136);
-        }
-        else{
-            drivebase->turn(ty*-.136);
-        }
-    }*/
-
-
     if (controller_1->GetLeftBumper() && button_grace_period_timer->getTimer())
     {
         is_turning = true;
-        turn_mode = -1;// We are turning ccw
-    }else if (controller_1->GetRightBumper() && button_grace_period_timer->getTimer())
+        turn_mode = -1; // We are turning ccw
+    }
+    else if (controller_1->GetRightBumper() && button_grace_period_timer->getTimer())
     {
         is_turning = true;
-        turn_mode = 1;// We are turning cw
-    }else if(controller_1->GetXButton() && button_grace_period_timer->getTimer()){
+        turn_mode = 1; // We are turning cw
+    }
+    else if (controller_1->GetXButton() && button_grace_period_timer->getTimer())
+    {
         is_turning = true;
         turn_mode = 2;
     }
 
-    if(is_turning && turn_mode == 1){
-        if(drivebase->relativeTurn(90)){
-            drivebase->resetFlags();
-            is_turning = false;
-            turn_mode = 0;
-        }
-    }else if(is_turning && turn_mode == -1){
-        if(drivebase->relativeTurn(-90)){
-            drivebase->resetFlags();
-            is_turning = false;
-            turn_mode = 0;
-        }
-    }else if(is_turning && turn_mode == 2){
-        if(drivebase->relativeTurn(camera->getCurrentYaw())){
+    if (is_turning && turn_mode == 1)
+    {
+        if (drivebase->relativeTurn(90))
+        {
             drivebase->resetFlags();
             is_turning = false;
             turn_mode = 0;
         }
     }
-    
+    else if (is_turning && turn_mode == -1)
+    {
+        if (drivebase->relativeTurn(-90))
+        {
+            drivebase->resetFlags();
+            is_turning = false;
+            turn_mode = 0;
+        }
+    }
+    else if (is_turning && turn_mode == 2)
+    {
+        if (drivebase->relativeTurn(camera->getCurrentYaw()))
+        {
+            drivebase->resetFlags();
+            is_turning = false;
+            turn_mode = 0;
+        }
+    }
 
     // CHRAM!!!
     if (controller_2->GetAButton() && button_grace_period_timer->getTimer())
@@ -210,3 +208,15 @@ DriveControl::~DriveControl()
     delete controller_2;
     delete button_grace_period_timer;
 }
+
+/*Graveyard
+
+    //Debug on controller A button
+    if (controller_1->GetAButton() && button_grace_period_timer->getTimer())
+    {
+        std::cout << "Left Position: " << drivebase->getLeftPosition() << std::endl;
+        std::cout << "Right Position: " << drivebase->getRightPostion() << std::endl;
+        std::cout << "Angle: " << drivebase->getAngle() << std::endl;
+    }
+
+*/
