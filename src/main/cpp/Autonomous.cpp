@@ -33,22 +33,55 @@ void Autonomous::defaultAuto(){
     static int steps = 0;
     
     if(print_timer->getTimer()){
-        std::cout<<"Left Position: "<<drivetrain->getLeftPosition()<<std::endl;
-        std::cout<<"Right Position: "<<drivetrain->getRightPostion()<<std::endl;
-        std::cout<<"Angle: "<<drivetrain->getAngle()<<std::endl;
+        //std::cout<<"Left Position: "<<drivetrain->getLeftPosition()<<std::endl;
+       //std::cout<<"Right Position: "<<drivetrain->getRightPostion()<<std::endl;
+       //std::cout<<"Angle: "<<drivetrain->getAngle()<<std::endl;
     }
 
     switch(steps){
         case 0:
-            if(drivetrain->relativeMoveForward(310,310)){
-                steps++;
-            }
+            utilties->togglePincher();
+            steps++;
             break;
         case 1:
-            if(drivetrain->relativeMoveBackward(270,270)){
+            if(utilties->moveArm(0.3)==2){
                 steps++;
             }
             break;
+        case 2:
+            utilties->togglePincher();
+            steps++;
+            break;
+        case 3:
+            if(utilties->moveArm(-.3)==1){
+                steps++;
+            }
+            break;
+        case 4:
+            if(drivetrain->relativeMoveForward(0,0)){
+                //if possible lining up on the cube before getting to it would be a nice touch
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 5:
+            utilties->togglePincher();
+            steps++;
+            break;
+        case 6:
+            if(drivetrain->relativeTurn(0)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 7:
+            if (drivetrain->relativeMoveBackward(0,0)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 8:
+
         default:
             break;
     }
@@ -71,6 +104,7 @@ void Autonomous::custom1(){
         case 0:
             if(drivetrain->relativeMoveForward(50,50)){
                 utilties->chram();
+                //utilties->moveArm(0.5); //positive moves up
                 steps++;
                 drivetrain->resetFlags();//Reset the flags to enable further steps
             }

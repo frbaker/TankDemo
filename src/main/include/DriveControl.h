@@ -28,6 +28,7 @@ private:
     Vision *camera;//Variable for accessing robo cam data
     frc::XboxController *controller_1; // Main Controller
     frc::XboxController *controller_2; // Secondary Controller
+    double drift_comp;
     // Stack
     bool is_tank_drive; // variable to hold drive style
     bool is_turning;

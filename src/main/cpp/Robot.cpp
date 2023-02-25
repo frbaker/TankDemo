@@ -19,6 +19,7 @@ DriveControl controller(&drivetrain, &utilites, &vision); // Create drive contro
 void Robot::RobotInit()
 {
   // Link our drivetrain with our telemetry
+  utilites.togglePincher();//Toggle our pincher on start
 }
 // Put code here to be called constantly regardless of robot state
 void Robot::RobotPeriodic()
@@ -34,8 +35,6 @@ void Robot::AutonomousInit()
 // Put main auto code here. Called every 20s during auto.
 void Robot::AutonomousPeriodic()
 {
-  // utilites.calibrateArm(); // Calibrate arm encoder
-  //drivetrain.setSpeed(-0.3, -0.3);
   auto_manager.manageAuto();//Mange what auto is running
 }
 // Runs once on teleop start

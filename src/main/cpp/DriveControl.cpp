@@ -14,6 +14,7 @@ DriveControl::DriveControl(DriveTrain *dtobj, RobotAuxilary *auxobj, Vision *cam
 {
     controller_1 = new frc::XboxController(0); // Init main controller
     controller_2 = new frc::XboxController(1); // Init secondary controller
+    drift_comp = 0.225;
     drivebase = dtobj;                         // Get the drivetrain object
     utilites = auxobj;                         // Get the auxilary object
     camera = camobj;
@@ -32,6 +33,8 @@ DriveControl::DriveControl(DriveTrain *dtobj, RobotAuxilary *auxobj, Vision *cam
 void DriveControl::teleopController()
 {
     pollButtons(); // Continuously check the state of the buttons on the xbox controllers and respond accordingly
+
+    utilites->moveArm(filterInput(controller_2->GetLeftY(),drift_comp));//Control the arm
 
     if (is_tank_drive)
     {                    // if the tank drive boolean is true, then use tank dive
@@ -64,7 +67,7 @@ void DriveControl::tankOperation()
     // Use tank drive and ramp motor power output by squaring the controller input to form a nice curve
     if (!is_turning)
     {
-        drivebase->setSpeed(std::pow(filterInput(controller_1->GetLeftY(), 0.25), 3.0), std::pow(filterInput(controller_1->GetRightY(), 0.25), 3.0));
+        drivebase->setSpeed(std::pow(filterInput(controller_1->GetLeftY(), drift_comp), 3.0), std::pow(filterInput(controller_1->GetRightY(), drift_comp), 3.0));
     }
 }
 
@@ -74,8 +77,8 @@ void DriveControl::tankOperation()
  */
 void DriveControl::traditionalDrive()
 {
-    double y = filterInput(controller_1->GetLeftY(), 0.25);  // Get the overall power value after filtering the deadband
-    double x = filterInput(controller_1->GetRightX(), 0.25); // Get the steering value multiplier after filtering the deadband
+    double y = filterInput(controller_1->GetLeftY(), drift_comp);  // Get the overall power value after filtering the deadband
+    double x = filterInput(controller_1->GetRightX(), drift_comp); // Get the steering value multiplier after filtering the deadband
     double leftpower = 0.;
     double rightpower = 0.;
 
@@ -126,10 +129,10 @@ double DriveControl::filterInput(double input, double threshold)
 void DriveControl::pollButtons()
 {
 
-    if (filterInput(controller_1->GetLeftY, drift_comp) != 0.0 ||
-        filterInput(controller_1->GetLeftX, drift_comp) != 0.0 ||
-        filterInput(controller_1->GetRightY, drift_comp) != 0.0 ||
-        filterInput(controller_1->GetRightY, drift_comp) != 0.0)
+    if (filterInput(controller_1->GetLeftY(), drift_comp) != 0.0 ||
+        filterInput(controller_1->GetLeftX(), drift_comp) != 0.0 ||
+        filterInput(controller_1->GetRightY(), drift_comp) != 0.0 ||
+        filterInput(controller_1->GetRightX(), drift_comp) != 0.0)
     {
         is_turning = false; // Yield control back to the driver from auto turning or cube alignment
     }

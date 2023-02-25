@@ -15,6 +15,7 @@ public:
     void togglePincher();
     void chram();
     void unChram();
+    short moveArm(double speed);
 
 private:
     rev::CANSparkMax *m_arm;
@@ -22,7 +23,11 @@ private:
     frc::Solenoid *m_chram;
     frc::DoubleSolenoid *m_pincher;
     frc::DigitalInput *m_arm_limit;
+    bool is_pinched;
     bool is_extended;
+    double arm_position_max;
+    double arm_position_home;
+    bool overtravelled_home, overtravelled_max;
 };
 
 #endif // ROBOTAUXILARY_H
