@@ -14,6 +14,8 @@ public:
     Vision();
     void run();
     double getCurrentYaw();
+    double getStoredYaw();
+    void resetFlags();
     ~Vision();
 
 private:

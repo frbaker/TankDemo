@@ -15,11 +15,11 @@ RobotAuxilary::RobotAuxilary()
     m_pincher = new frc::DoubleSolenoid(frc::PneumaticsModuleType::CTREPCM, 4,5); // Init the pincher
     m_arm_limit = new frc::DigitalInput(0);                                        // Init the limit on IO 0
     m_arm->SetInverted(true);
-    //m_arm->SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);//Set the arm to be constantly braking when no input
+    m_arm->SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);//Set the arm to be constantly braking when no input
     is_extended = false;//Start with chram retracted
     is_pinched = false;//Start with pincher open
     arm_position_home = 0.1;//12//Min movement for robot arm//0.0 is true home
-    arm_position_max = 30.0; //22//Max movement for robot arm //30.0 is where to stop for shelf
+    arm_position_max = 28.0; //22//Max movement for robot arm //30.0 is where to stop for shelf
     overtravelled_home = true;//We have not overtravelled yet
     overtravelled_max = false;//We have not overtravelled yet
 }
@@ -81,8 +81,8 @@ short RobotAuxilary::moveArm(double speed){
 
 speed = speed/2;
 
-std::cout<<m_arm_encoder->GetPosition()<<std::endl;
-std::cout<<"LIM"<<m_arm_limit->Get()<<std::endl;
+//std::cout<<m_arm_encoder->GetPosition()<<std::endl;
+//std::cout<<"LIM"<<m_arm_limit->Get()<<std::endl;
 
 
 if(m_arm_limit->Get() == 0){

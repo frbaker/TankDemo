@@ -3,9 +3,10 @@
 
 #include <iostream>
 
-Autonomous::Autonomous(DriveTrain* dvtobj, RobotAuxilary* auxobj){
+Autonomous::Autonomous(DriveTrain* dvtobj, RobotAuxilary* auxobj, Vision* camobj){
     drivetrain = dvtobj;
     utilties = auxobj;
+    camera = camobj;
     m_chooser = new frc::SendableChooser<int>;//Allocate memory for the sendable chooser
     m_chooser->SetDefaultOption("Default", 0);
     m_chooser->AddOption("Straight Forward",1);
@@ -32,15 +33,15 @@ void Autonomous::manageAuto(){
 void Autonomous::defaultAuto(){
     static int steps = 0;
     
-    if(print_timer->getTimer()){
+    /*if(print_timer->getTimer()){
         //std::cout<<"Left Position: "<<drivetrain->getLeftPosition()<<std::endl;
        //std::cout<<"Right Position: "<<drivetrain->getRightPostion()<<std::endl;
        //std::cout<<"Angle: "<<drivetrain->getAngle()<<std::endl;
-    }
+    }*/
 
     switch(steps){
         case 0:
-            utilties->togglePincher();
+            //utilties->togglePincher();
             steps++;
             break;
         case 1:
@@ -58,30 +59,78 @@ void Autonomous::defaultAuto(){
             }
             break;
         case 4:
-            if(drivetrain->relativeMoveForward(0,0)){
+            if(drivetrain->relativeMoveForward(220,220)){
                 //if possible lining up on the cube before getting to it would be a nice touch
-                steps++;
+                steps+=3;
                 drivetrain->resetFlags();//Reset the flags to enable further steps
             }
             break;
+
         case 5:
-            utilties->togglePincher();
-            steps++;
+                if(drivetrain->relativeTurn(camera->getStoredYaw()*2)){
+                    drivetrain->resetFlags();
+                    steps++;
+                }
             break;
+
         case 6:
-            if(drivetrain->relativeTurn(0)){
-                steps++;
-                drivetrain->resetFlags();//Reset the flags to enable further steps
-            }
+                if(drivetrain->relativeTurn(camera->getStoredYaw()*2)){
+                    drivetrain->resetFlags();
+                    camera->resetFlags();
+                    steps++;
+                }
             break;
+
         case 7:
-            if (drivetrain->relativeMoveBackward(0,0)){
-                steps++;
-                drivetrain->resetFlags();//Reset the flags to enable further steps
-            }
+                if(drivetrain->relativeMoveForward(95,95)){
+                    drivetrain->resetFlags();
+                    steps++;
+                }
             break;
         case 8:
+        if(print_timer->getTimer()){
+            utilties->togglePincher();
+            steps++;
+        }
+            break;
+        
+        case 9:
+                if(drivetrain->relativeMoveBackward(10,10)){
+                    drivetrain->resetFlags();
+                    steps++;
+                }
+            break;
 
+        
+        case 10:
+            if(drivetrain->relativeTurn(-45)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 11:
+            if (drivetrain->relativeMoveBackward(100,100)){
+                steps++;
+                drivetrain->resetFlags();//Reset the flags to enable further steps
+            }
+            break;
+        case 12:
+            if(drivetrain->relativeTurn(45)){
+                drivetrain->resetFlags();
+                steps++;
+            }
+            break;
+        case 13:
+            if(drivetrain->relativeMoveBackward(92.0,92.0)){
+                drivetrain->resetFlags();
+                steps++;
+            }
+            break;
+        case 14:
+            if(drivetrain->balance()){
+                drivetrain->resetFlags();
+                steps++;
+            }
         default:
             break;
     }

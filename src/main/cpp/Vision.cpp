@@ -1,6 +1,7 @@
 #include "Vision.h"
 
 #include <iostream>
+#include <cmath>
 
 Vision::Vision()
 {
@@ -20,6 +21,9 @@ void Vision::run()
         *target = result->GetBestTarget();
         // Get information from target.
         current_yaw = target->GetYaw();
+        if(std::abs(stored_yaw) >= std::abs(current_yaw)+2 || std::abs(stored_yaw) <= std::abs(current_yaw)-2){
+            stored_yaw = current_yaw;
+        }
         // std::cout<<"Yaw: "<<yaw<<std::endl;
         // double pitch = target->GetPitch();
         // double area = target->GetArea();
@@ -40,6 +44,13 @@ double Vision::getCurrentYaw()
     return current_yaw;
 }
 
+double Vision::getStoredYaw(){
+    return stored_yaw;
+}
+
+void Vision::resetFlags(){
+    stored_yaw = current_yaw;
+}
 
 /**
  * @brief Destroy the Vision:: Vision object

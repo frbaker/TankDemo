@@ -3,13 +3,14 @@
 
 #include "DriveTrain.h"
 #include "RobotAuxilary.h"
+#include "Vision.h"
 #include "Timer.h"
 #include <frc/SmartDashboard/SendableChooser.h>
 
 class Autonomous{
 
     public:
-    Autonomous(DriveTrain* dvtobj, RobotAuxilary* auxobj);
+    Autonomous(DriveTrain* dvtobj, RobotAuxilary* auxobj, Vision* camobj);
     ~Autonomous();
     void manageAuto();
     void defaultAuto();
@@ -19,6 +20,7 @@ class Autonomous{
     private:
     DriveTrain* drivetrain;
     RobotAuxilary* utilties;
+    Vision* camera;
     Timer* print_timer;
     frc::SendableChooser<int>* m_chooser;
     

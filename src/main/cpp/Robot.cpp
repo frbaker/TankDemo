@@ -12,14 +12,14 @@
 DriveTrain drivetrain;                           // Object to control drive motors
 RobotAuxilary utilites;                          // Object to control robot arm and puncher
 Vision vision;                                   // Object for interfacing with camera
-Autonomous auto_manager(&drivetrain,&utilites);                         // Object to control autonomous
+Autonomous auto_manager(&drivetrain,&utilites, &vision);                         // Object to control autonomous
 DriveControl controller(&drivetrain, &utilites, &vision); // Create drive control object
 
 // Runs once one startup
 void Robot::RobotInit()
 {
   // Link our drivetrain with our telemetry
-  utilites.togglePincher();//Toggle our pincher on start
+  //utilites.togglePincher();//Toggle our pincher on start
 }
 // Put code here to be called constantly regardless of robot state
 void Robot::RobotPeriodic()
@@ -31,14 +31,18 @@ void Robot::RobotPeriodic()
 void Robot::AutonomousInit()
 {
   drivetrain.setZero();//Set encoder and gyro to 0
+  drivetrain.setBreakMode();
 }
 // Put main auto code here. Called every 20s during auto.
 void Robot::AutonomousPeriodic()
 {
   auto_manager.manageAuto();//Mange what auto is running
+  vision.run();
 }
 // Runs once on teleop start
-void Robot::TeleopInit() {}
+void Robot::TeleopInit() {
+  drivetrain.setCoastMode();
+}
 // Put main code here. Called every 20ms by default.
 void Robot::TeleopPeriodic()
 {

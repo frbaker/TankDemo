@@ -34,7 +34,7 @@ void DriveControl::teleopController()
 {
     pollButtons(); // Continuously check the state of the buttons on the xbox controllers and respond accordingly
 
-    utilites->moveArm(filterInput(controller_2->GetLeftY(),drift_comp));//Control the arm
+    utilites->moveArm(filterInput(-controller_2->GetLeftY(),drift_comp));//Control the arm
 
     if (is_tank_drive)
     {                    // if the tank drive boolean is true, then use tank dive

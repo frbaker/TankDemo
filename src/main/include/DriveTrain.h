@@ -15,7 +15,7 @@ public:
     bool relativeTurn(double desired_ang);
     bool relativeMoveForward(double lpos, double rpos);
     bool relativeMoveBackward(double lpos, double rpos);
-
+    bool balance();
     void setCoastMode();
     void setBreakMode();
     void setSpeed(double ls, double rs);
@@ -49,6 +49,7 @@ private:
     double relative_right_pos_zero;
     double relative_ang_zero;
     bool at_angle;
+    bool is_balanced;
 
     const double k_angle_error = 1.0;
     const double krevs_per_inch = 1.6146; // Number of revolutions per inch

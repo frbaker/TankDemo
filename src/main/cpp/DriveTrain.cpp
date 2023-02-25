@@ -70,6 +70,7 @@ void DriveTrain::resetFlags()
     relative_right_pos_zero = 0.0;
     at_angle = false;
     relative_ang_zero = 0.0;
+    is_balanced = true;
 }
 
 /**
@@ -134,6 +135,27 @@ bool DriveTrain::relativeTurn(double desired_ang){
     return absoluteTurn(relative_ang_zero + desired_ang);
 }
 
+
+bool DriveTrain::balance(){
+
+    if(gyro->GetPitch() > 2.0){
+        is_balanced = false;
+        if(relativeMoveForward(1.0,1.0)){
+            resetFlags();
+        }
+    }else if(gyro->GetPitch() < -2.0){
+        is_balanced = false;
+        if(relativeMoveBackward(1.0,1.0)){
+            resetFlags();
+        }
+    }else{
+        is_balanced = true;
+    }
+
+    return is_balanced;
+}
+
+
 bool DriveTrain::relativeMoveForward(double lpos, double rpos)
 {
 
@@ -146,7 +168,7 @@ bool DriveTrain::relativeMoveForward(double lpos, double rpos)
 
     if (lpos + relative_left_pos_zero > getLeftPosition() && !at_position_left)
     {                             // if desired position is behind current encoder position
-        left_motor_1->Set(-0.25); // Left motors forward 75%
+        left_motor_1->Set(-0.75); // Left motors forward 75%
     }
     else
     {
@@ -156,7 +178,7 @@ bool DriveTrain::relativeMoveForward(double lpos, double rpos)
 
     if (rpos + relative_right_pos_zero > getRightPostion() && !at_position_right)
     {                              // if desired position is behind current encoder position
-        right_motor_1->Set(-0.25); // Right motors forward 75%
+        right_motor_1->Set(-0.75); // Right motors forward 75%
     }
     else
     {
@@ -179,7 +201,7 @@ bool DriveTrain::relativeMoveBackward(double lpos, double rpos)
 
     if (relative_left_pos_zero - lpos < getLeftPosition() && !at_position_left)
     {                            // if desired position is ahead of current encoder position
-        left_motor_1->Set(0.25); // Left motors reverse 75%
+        left_motor_1->Set(0.75); // Left motors reverse 75%
     }
     else
     {
@@ -189,7 +211,7 @@ bool DriveTrain::relativeMoveBackward(double lpos, double rpos)
 
     if (relative_right_pos_zero - rpos < getRightPostion() && !at_position_right)
     {                             // if desired position is ahead of current encoder position
-        right_motor_1->Set(0.25); // Right motors reverse 75%
+        right_motor_1->Set(0.75); // Right motors reverse 75%
     }
     else
     {
