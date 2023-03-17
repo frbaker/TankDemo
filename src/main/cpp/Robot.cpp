@@ -3,35 +3,40 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "Robot.h"
+#include "DriveTrain.h"
+#include "RobotAuxilary.h"
+#include "Autonomous.h"
 #include "DriveControl.h"
-#include "Telemetry.h"
 #include "Vision.h"
 
-DriveTrain drivetrain;                // Object to control drive motors
-DriveControl controller(&drivetrain); // Create drive control object
-Telemetry data(&drivetrain);          // Reference our drivetrain object
-Vision vision;                        // Object for interfacing with camera
+DriveTrain drivetrain;                           // Object to control drive motors
+RobotAuxilary utilites;                          // Object to control robot arm and puncher
+Autonomous auto_manager(&drivetrain,&utilites);                         // Object to control autonomous
+DriveControl controller(&drivetrain, &utilites); // Create drive control object
+Vision vision;                                   // Object for interfacing with camera
 
 // Runs once one startup
 void Robot::RobotInit()
 {
   // Link our drivetrain with our telemetry
-  drivetrain.loadTelemetry(data.exportTelemetry());
 }
 // Put code here to be called constantly regardless of robot state
 void Robot::RobotPeriodic()
 {
-  vision.test();
+
 }
 
 // Put auto startup code here. Runs once on auto start.
 void Robot::AutonomousInit()
 {
+  drivetrain.setZero();//Set encoder and gyro to 0
 }
 // Put main auto code here. Called every 20s during auto.
 void Robot::AutonomousPeriodic()
 {
-  data.runMetrics(); // Constantly update robot position data
+  // utilites.calibrateArm(); // Calibrate arm encoder
+  //drivetrain.setSpeed(-0.3, -0.3);
+  auto_manager.manageAuto();//Mange what auto is running
 }
 // Runs once on teleop start
 void Robot::TeleopInit() {}
@@ -39,8 +44,7 @@ void Robot::TeleopInit() {}
 void Robot::TeleopPeriodic()
 {
   controller.teleopController(); // Take input from controllers -- main control during teleop
-  data.runMetrics();             // Constantly update robot position data
-
+  controller.driveManager();     // Handle any robot functions needed outside of driver input
 }
 
 void Robot::DisabledInit() {}     // Not used

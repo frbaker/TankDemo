@@ -1,26 +1,31 @@
 #include "DriveControl.h"
+#include <algorithm>
 #include <cmath>
+#include <iostream>
 
 #define PI 3.141592653589793
 
+#include <iostream>
+
 /**
  * @brief Construct a new Drive Control:: Drive Control object
- * 
+ *
  * @param dtobj Takes a pointer to the robot drive train object
  */
-DriveControl::DriveControl(DriveTrain *dtobj)
+DriveControl::DriveControl(DriveTrain *dtobj, RobotAuxilary *auxobj)
 {
     controller_1 = new frc::XboxController(0); // Init main controller
     controller_2 = new frc::XboxController(1); // Init secondary controller
     drivebase = dtobj;                         // Get the drivetrain object
-    is_tank_drive = true;                      // Start the robot in tank drive mode
+    utilites = auxobj;                         // Get the auxilary object
+    is_tank_drive = false;                     // Start the robot in tank drive mode
     // Timers
-    button_grace_period_timer = new Timer(300); // Delay time in milliseconds
+    button_grace_period_timer = new Timer(300); // Debounce time in milliseconds
 }
 
 /**
  * @brief Main method to handle robot-joystick interaction during teleop
- * 
+ *
  */
 void DriveControl::teleopController()
 {
@@ -37,8 +42,20 @@ void DriveControl::teleopController()
 }
 
 /**
+ * @brief This function manages any teleop functions not handled by drivers
+ *
+ */
+void DriveControl::driveManager()
+{
+    if (!controller_2->GetAButton())
+    {
+        utilites->unChram(); // Auto retract the chrammer
+    }
+}
+
+/**
  * @brief Tank drive style implementation
- * 
+ *
  */
 void DriveControl::tankOperation()
 {
@@ -48,7 +65,7 @@ void DriveControl::tankOperation()
 
 /**
  * @brief Traditional drive style implementation
- * 
+ *
  */
 void DriveControl::traditionalDrive()
 {
@@ -60,27 +77,27 @@ void DriveControl::traditionalDrive()
     if (y > 0.0)
     { // Forward
         leftpower = std::clamp(std::pow(y, 2.0) + std::sin(PI * x / 4), 0.1, 1.0);
-        rightpower = std::clamp(std::pow(y, 2.0) + std::sin(PI * x / 4), 0.1, 1.0);
+        rightpower = std::clamp(std::pow(y, 2.0) - std::sin(PI * x / 4), 0.1, 1.0);
     }
     else if (y < 0.0)
-    {                                                        // Reverse
-        leftpower = -std::clamp(std::pow(y, 2.0), 0.1, 1.0); // Set negative value for reverse
-        rightpower = -std::clamp(std::pow(y, 2.0), 0.1, 1.0);
+    { // Reverse -- set negative values
+        leftpower = -std::clamp(std::pow(y, 2.0) + std::sin(PI * x / 4), 0.1, 1.0);
+        rightpower = -std::clamp(std::pow(y, 2.0) - std::sin(PI * x / 4), 0.1, 1.0);
     }
     else
     { // 0 power, so spin
-        leftpower = std::pow(-x, 3.0);
-        rightpower = std::pow(x, 3.0);
+        leftpower = -x * .75;
+        rightpower = x * .75;
     }
     drivebase->setSpeed(leftpower, rightpower); // Set power values to the motor
 }
 
 /**
  * @brief Takes joystick input and filters out low values that can be caused by joystick drift
- * 
+ *
  * @param input Data to filter
  * @param threshold Ammount to filter relative to base 0
- * @return double 
+ * @return double
  */
 double DriveControl::filterInput(double input, double threshold)
 {
@@ -96,7 +113,7 @@ double DriveControl::filterInput(double input, double threshold)
 
 /**
  * @brief Handle button input and mappings
- * 
+ *
  */
 void DriveControl::pollButtons()
 {
@@ -106,15 +123,29 @@ void DriveControl::pollButtons()
         is_tank_drive = !is_tank_drive; // Swap tank drive state
     }
 
-    if (controller_1->GetAButton() & button_grace_period_timer->getTimer())
+    if (controller_1->GetAButton() && button_grace_period_timer->getTimer())
     {
-        // Template for the a button
+        std::cout<<"Left Position: "<<drivebase->getLeftPosition()<<std::endl;
+        std::cout<<"Right Position: "<<drivebase->getRightPostion()<<std::endl;
+        std::cout<<"Angle: "<<drivebase->getAngle()<<std::endl;
+    }
+
+    // CHRAM!!!
+    if (controller_2->GetAButton() && button_grace_period_timer->getTimer())
+    {
+        utilites->chram(); // Punch cube
+    }
+
+    // Pinchers
+    if (controller_2->GetXButton() && button_grace_period_timer->getTimer())
+    {
+        utilites->togglePincher(); // Toggle pinching the cube
     }
 }
 
 /**
  * @brief Destroy the Drive Control:: Drive Control object
- * 
+ *
  */
 DriveControl::~DriveControl()
 {

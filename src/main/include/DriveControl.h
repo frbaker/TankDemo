@@ -2,16 +2,18 @@
 #define DRIVECONTROL_H
 
 #include <frc/XboxController.h>
-#include "DriveTrain.h" //Header for all of our drive control and motors
-#include "Timer.h"      //Self made simple timer
+#include "DriveTrain.h"    //Header for all of our drive control and motors
+#include "RobotAuxilary.h" //Header for robots arm and puncher, and ect
+#include "Timer.h"         //Self made simple timer
 
 class DriveControl
 {
 
 public:
-    DriveControl(DriveTrain *dtobj); // Ctor
-    ~DriveControl();                 // Dtor
-    void teleopController();         // Bundles drive train with other robot opertaions
+    DriveControl(DriveTrain *dtobj, RobotAuxilary *auxobj); // Ctor
+    ~DriveControl();                                        // Dtor
+    void teleopController();                                // Bundles drive train with other robot opertaions
+    void driveManager();                                    // Handles any robot functionality during teleop that is not controlled by drivers
 
 private:
     void tankOperation();                               // Enables drive train operation in tank mode
@@ -21,6 +23,7 @@ private:
     // Members Variables
     // Heap
     DriveTrain *drivebase;             // Variable for holding drive train object
+    RobotAuxilary *utilites;           // Variable for holding robot utilities like arm and chrammer
     frc::XboxController *controller_1; // Main Controller
     frc::XboxController *controller_2; // Secondary Controller
     // Stack

@@ -1,11 +1,11 @@
 #ifndef DRIVETRAIN_H
 #define DRIVETRAIN_H
 
-// #include <ctre/phoenixpro/TalonFX.hpp>
 #include <rev/CANSparkMAX.h>
 #include <frc/DigitalOutput.h>
 #include <frc/AnalogEncoder.h>
 #include "DataPacket.h"
+
 
 #include "ctre/Phoenix.h"
 
@@ -15,24 +15,41 @@ class DriveTrain
 public:
     DriveTrain();  // Ctor
     ~DriveTrain(); // Dtor
-    bool moveTo(double lpos, double rpos);
-    bool snapshotMoveTo(double lpos, double rpos, double lspd, double rspd);
+    void setZero();
+    bool absoluteMoveForward(double lpos, double rpos);
+    bool absoluteMoveBackward(double lpos, double rpos);
+    bool absoluteTurnCW(double ang);
+    bool absoluteTurnCCW(double ang);
+
+    bool relativeMoveForward(double lpos, double rpos);
+    bool relativeMoveBackward(double lpos, double rpos);
+
     void setSpeed(double ls, double rs);
-    double *getSpeeds();                     // returns the current speeds of each motor
-    double *getPositions();                  // Returns the current encoder positions for each motor encoder
-    void loadTelemetry(SparkMaxPacket *dta); // Get the pointer for the telemetry data packet
-    void updateTelemetry();                  // Fills the telemetry struct with new data
+    double getLeftPosition();
+    double getRightPostion();
+    double getLeftPower();
+    double getRightPower();
+    double getAngle();
+    void resetFlags();
 
 private:
     void configureMotors(); // Used to configure motors specifically for this robot
-    void setZero();         // Used to set encoder positions to zero upon object creation
+    
 
     rev::SparkMaxRelativeEncoder *left_encoder_1;
     rev::SparkMaxRelativeEncoder *left_encoder_2;
     rev::SparkMaxRelativeEncoder *right_encoder_1;
     rev::SparkMaxRelativeEncoder *right_encoder_2;
 
-    SparkMaxPacket *telemetry_link; // Used to hold pointer to telemetry link
+    ctre::phoenix::sensors::PigeonIMU *gyro;
+
+    bool on_init;
+    bool at_position_left;
+    bool at_position_right;
+    double relative_left_pos_zero;
+    double relative_right_pos_zero;
+    double relative_ang_zero;
+    bool at_angle;
 
   frc::AnalogEncoder *swerve_encoder_1;
   frc::AnalogEncoder *swerve_encoder_2;
@@ -50,6 +67,7 @@ private:
   ctre::phoenix::motorcontrol::can::TalonSRX *swerve_motor_3;
   ctre::phoenix::motorcontrol::can::TalonSRX *swerve_motor_4;
  
+
 };
 
 #endif // DRIVETRAIN_H

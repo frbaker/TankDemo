@@ -18,12 +18,12 @@ void Vision::test()
         *target = result->GetBestTarget();
         // Get information from target.
         double yaw = target->GetYaw();
-        std::cout<<"Yaw: "<<yaw<<std::endl;
+        //std::cout<<"Yaw: "<<yaw<<std::endl;
         double pitch = target->GetPitch();
         double area = target->GetArea();
         double skew = target->GetSkew();
         int targetID = target->GetFiducialId();
-        std::cout<<"ID: "<<targetID<<std::endl;
+        //std::cout<<"ID: "<<targetID<<std::endl;
         double poseAmbiguity = target->GetPoseAmbiguity();
         units::meter_t range = photonlib::PhotonUtils::CalculateDistanceToTarget(
             CAMERA_HEIGHT, TARGET_HEIGHT, CAMERA_PITCH,
