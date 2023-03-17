@@ -1,5 +1,5 @@
 #include "DriveTrain.h"
-#include <cmath>
+#include "ctre/Phoenix.h"
 
 /**
  * @brief Construct a new Drive Train:: Drive Train object
@@ -7,21 +7,30 @@
  */
 DriveTrain::DriveTrain()
 {
-    // Spark motor controller creation for neo brushless motors
-    left_motor_1 = new rev::CANSparkMax(4, rev::CANSparkMaxLowLevel::MotorType::kBrushless);
-    left_motor_2 = new rev::CANSparkMax(5, rev::CANSparkMax::MotorType::kBrushless);
-    right_motor_1 = new rev::CANSparkMax(6, rev::CANSparkMax::MotorType::kBrushless);
-    right_motor_2 = new rev::CANSparkMax(7, rev::CANSparkMax::MotorType::kBrushless);
+    swerve_encoder_1 = new frc::AnalogEncoder(1);
+    swerve_encoder_2 = new frc::AnalogEncoder(2);
+    swerve_encoder_3 = new frc::AnalogEncoder(3);
+    swerve_encoder_4 = new frc::AnalogEncoder(4);
+
+    drive_motor_1 = new ctre::phoenix::motorcontrol::can::TalonSRX(4);
+    drive_motor_2 = new ctre::phoenix::motorcontrol::can::TalonSRX(5);
+    drive_motor_3 = new ctre::phoenix::motorcontrol::can::TalonSRX(6);
+    drive_motor_4 = new ctre::phoenix::motorcontrol::can::TalonSRX(7);
+
+    swerve_motor_1 = new ctre::phoenix::motorcontrol::can::TalonSRX(8);
+    swerve_motor_2 = new ctre::phoenix::motorcontrol::can::TalonSRX(9);
+    swerve_motor_3 = new ctre::phoenix::motorcontrol::can::TalonSRX(10);
+    swerve_motor_4 = new ctre::phoenix::motorcontrol::can::TalonSRX(11);
+
+
     configureMotors();
     // Motor encoder creation for neo brushless motors
     // We have to create a copy of the object created by calling get encoder, which returns an object, not a pointer
-    left_encoder_1 = new rev::SparkMaxRelativeEncoder(left_motor_1->GetEncoder());
-    left_encoder_2 = new rev::SparkMaxRelativeEncoder(left_motor_2->GetEncoder());
-    right_encoder_1 = new rev::SparkMaxRelativeEncoder(right_motor_1->GetEncoder());
-    right_encoder_2 = new rev::SparkMaxRelativeEncoder(right_motor_2->GetEncoder());
-    // Gyro
-    gyro = new ctre::phoenix::sensors::PigeonIMU(16); // Create our gyro object with can ID 16
-                                                      // Zero all sensors
+
+    //left_encoder_1 = new rev::SparkMaxRelativeEncoder(left_motor_1->GetEncoder());
+    //left_encoder_2 = new rev::SparkMaxRelativeEncoder(left_motor_2->GetEncoder());
+    //right_encoder_1 = new rev::SparkMaxRelativeEncoder(right_motor_1->GetEncoder());
+
     setZero();
     resetFlags(); // Reset movement flags
 }
@@ -34,11 +43,11 @@ DriveTrain::DriveTrain()
 void DriveTrain::configureMotors()
 {
     // Robot specific motor settings
-    left_motor_1->SetInverted(true); // Invert left side motors since they are flipped
-    left_motor_2->SetInverted(true); // Invert left side motors since they are flipped
+   // left_motor_1->SetInverted(true); // Invert left side motors since they are flipped
+    //left_motor_2->SetInverted(true); // Invert left side motors since they are flipped
     //
-    left_motor_2->Follow(*left_motor_1);   // Have to dereference pointer since function is defined as pass by reference, so we need to
-    right_motor_2->Follow(*right_motor_1); // pass the address of the object, not the address of the pointer
+    //left_motor_2->Follow(*left_motor_1);   // Have to dereference pointer since function is defined as pass by reference, so we need to
+    //right_motor_2->Follow(*right_motor_1); // pass the address of the object, not the address of the pointer
 }
 
 /**
@@ -74,47 +83,23 @@ bool DriveTrain::absoluteMoveForward(double lpos, double rpos)
 {
     if (lpos > getLeftPosition() && !at_position_left)
     {                             // if desired position is behind current encoder position
-        left_motor_1->Set(-0.25); // Left motors forward 75%
+        //left_motor_1->Set(-0.75); // Left motors reverse 75%
     }
-    else
-    {
-        left_motor_1->Set(0.0);
-        at_position_left = true;
+    else if (lpos > telemetry_link->left_position)
+    {                            // if desired position is ahead of current encoder position
+        //left_motor_1->Set(0.75); // Left motors forward 75%
+
     }
 
     if (rpos > getRightPostion() && !at_position_right)
     {                              // if desired position is behind current encoder position
-        right_motor_1->Set(-0.25); // Right motors forward 75%
-    }
-    else
-    {
-        right_motor_1->Set(0.0);
-        at_position_right = true;
-    }
+        //right_motor_1->Set(-0.75); // Right motors reverse 75%
 
-    return at_position_left & at_position_right;
-}
-
-bool DriveTrain::absoluteMoveBackward(double lpos, double rpos)
-{
-    if (lpos < getLeftPosition() && !at_position_left)
-    {                            // if desired position is ahead of current encoder position
-        left_motor_1->Set(0.25); // Left motors reverse 75%
-    }
-    else
-    {
-        left_motor_1->Set(0.0);
-        at_position_left = true;
     }
 
     if (rpos < getRightPostion() && !at_position_right)
     {                             // if desired position is ahead of current encoder position
-        right_motor_1->Set(0.25); // Right motors reverse 75%
-    }
-    else
-    {
-        right_motor_1->Set(0.0);
-        at_position_right = true;
+        //right_motor_1->Set(0.75); // Right motors forward 75%
     }
 
     return at_position_left & at_position_right;
@@ -223,11 +208,11 @@ bool DriveTrain::relativeMoveBackward(double lpos, double rpos){
  */
 void DriveTrain::setSpeed(double ls, double rs)
 {
-    // Set the speeds for each side of the robots drive train
-    left_motor_1->Set(ls);
-    // leftmotor2->Set(ls);//Should be controlled by motor 1
-    right_motor_1->Set(rs);
-    // rightmotor2->Set(rs);//Should be controlled by motor 1
+    drive_motor_1->Set(ControlMode::PercentOutput,0.0);
+    drive_motor_2->Set(ControlMode::PercentOutput,0.0);
+    drive_motor_3->Set(ControlMode::PercentOutput,0.0);
+    drive_motor_4->Set(ControlMode::PercentOutput,0.0);
+    
 }
 
 /**
@@ -277,7 +262,13 @@ double DriveTrain::getRightPower()
  */
 double DriveTrain::getAngle()
 {
-    return -(gyro->GetYaw());
+    // Update motor power
+    //telemetry_link->left_motor_power = left_motor_1->Get();   // Don't average since second motor is just a follower
+    //telemetry_link->right_motor_power = right_motor_1->Get(); // Don't average since second motor is just a follower
+    // Update encoder positions
+    telemetry_link->left_position = left_encoder_1->GetPosition() * left_encoder_2->GetPosition() / 2;    // Average the left side motor values and
+    telemetry_link->right_position = right_encoder_1->GetPosition() * right_encoder_2->GetPosition() / 2; // Average the left side motor values
+
 }
 
 /**
@@ -287,11 +278,24 @@ double DriveTrain::getAngle()
 DriveTrain::~DriveTrain()
 {
     // Motors
-    delete left_motor_1;
-    delete left_motor_2;
-    delete right_motor_1;
-    delete right_motor_2;
+    delete drive_motor_1;
+    delete drive_motor_2;
+    delete drive_motor_3;
+    delete drive_motor_4;
+
+    delete swerve_motor_1;
+    delete swerve_motor_2;
+    delete swerve_motor_3;
+    delete swerve_motor_4;
+
+
     // Encoders
+    delete swerve_encoder_1;
+    delete swerve_encoder_2;
+    delete swerve_encoder_3;
+    delete swerve_encoder_4;
+
+
     delete left_encoder_1;
     delete left_encoder_2;
     delete right_encoder_1;
