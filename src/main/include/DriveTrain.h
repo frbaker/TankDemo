@@ -4,7 +4,10 @@
 // #include <ctre/phoenixpro/TalonFX.hpp>
 #include <rev/CANSparkMAX.h>
 #include <frc/DigitalOutput.h>
+#include <frc/AnalogEncoder.h>
 #include "DataPacket.h"
+
+#include "ctre/Phoenix.h"
 
 class DriveTrain
 {
@@ -24,11 +27,6 @@ private:
     void configureMotors(); // Used to configure motors specifically for this robot
     void setZero();         // Used to set encoder positions to zero upon object creation
 
-    rev::CANSparkMax *left_motor_1;
-    rev::CANSparkMax *left_motor_2;
-    rev::CANSparkMax *right_motor_1;
-    rev::CANSparkMax *right_motor_2;
-
     rev::SparkMaxRelativeEncoder *left_encoder_1;
     rev::SparkMaxRelativeEncoder *left_encoder_2;
     rev::SparkMaxRelativeEncoder *right_encoder_1;
@@ -36,12 +34,22 @@ private:
 
     SparkMaxPacket *telemetry_link; // Used to hold pointer to telemetry link
 
-    /*TalonFX Motor Controllers
-   ctre::phoenixpro::hardware::TalonFX* leftmotor1;
-   ctre::phoenixpro::hardware::TalonFX* leftmotor2;
-   ctre::phoenixpro::hardware::TalonFX* rightmotor1;
-   ctre::phoenixpro::hardware::TalonFX* rightmotor2;
-    */
+  frc::AnalogEncoder *swerve_encoder_1;
+  frc::AnalogEncoder *swerve_encoder_2;
+  frc::AnalogEncoder *swerve_encoder_3;
+  frc::AnalogEncoder *swerve_encoder_4;
+
+
+  ctre::phoenix::motorcontrol::can::TalonSRX *drive_motor_1;
+  ctre::phoenix::motorcontrol::can::TalonSRX *drive_motor_2;
+  ctre::phoenix::motorcontrol::can::TalonSRX *drive_motor_3;
+  ctre::phoenix::motorcontrol::can::TalonSRX *drive_motor_4;
+
+  ctre::phoenix::motorcontrol::can::TalonSRX *swerve_motor_1;
+  ctre::phoenix::motorcontrol::can::TalonSRX *swerve_motor_2;
+  ctre::phoenix::motorcontrol::can::TalonSRX *swerve_motor_3;
+  ctre::phoenix::motorcontrol::can::TalonSRX *swerve_motor_4;
+ 
 };
 
 #endif // DRIVETRAIN_H
