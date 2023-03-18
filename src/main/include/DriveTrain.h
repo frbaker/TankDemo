@@ -36,28 +36,28 @@ private:
 /*
     rev::CANSparkMax *left_motor_1;
     rev::CANSparkMax *left_motor_2;
-    rev::CANSparkMax *right_motor_1;
-    rev::CANSparkMax *right_motor_2;
+    rev::CANSparkMax *front_right_drive;
+    rev::CANSparkMax *front_right_swerve;
 
-    rev::SparkMaxRelativeEncoder *left_encoder_1;
-    rev::SparkMaxRelativeEncoder *left_encoder_2;
-    rev::SparkMaxRelativeEncoder *right_encoder_1;
-    rev::SparkMaxRelativeEncoder *right_encoder_2;
+    rev::SparkMaxRelativeEncoder *front_left_encoder;
+    rev::SparkMaxRelativeEncoder *front_right_encoder;
+    rev::SparkMaxRelativeEncoder *back_left_encoder;
+    rev::SparkMaxRelativeEncoder *back_right_encoder;
 */
-ctre::phoenix::motorcontrol::can::TalonSRX *left_motor_1;
-ctre::phoenix::motorcontrol::can::TalonSRX *left_motor_2;
-ctre::phoenix::motorcontrol::can::TalonSRX *right_motor_1;
-ctre::phoenix::motorcontrol::can::TalonSRX *right_motor_2;
+ctre::phoenix::motorcontrol::can::TalonSRX *front_left_drive;
+ctre::phoenix::motorcontrol::can::TalonSRX *front_left_swerve;
+ctre::phoenix::motorcontrol::can::TalonSRX *front_right_drive;
+ctre::phoenix::motorcontrol::can::TalonSRX *front_right_swerve;
 
-ctre::phoenix::motorcontrol::can::TalonSRX *left_swerve_1;
-ctre::phoenix::motorcontrol::can::TalonSRX *left_swerve_2;
-ctre::phoenix::motorcontrol::can::TalonSRX *right_swerve_1;
-ctre::phoenix::motorcontrol::can::TalonSRX *right_swerve_2;
+ctre::phoenix::motorcontrol::can::TalonSRX *back_left_drive;
+ctre::phoenix::motorcontrol::can::TalonSRX *back_left_swerve;
+ctre::phoenix::motorcontrol::can::TalonSRX *back_right_drive;
+ctre::phoenix::motorcontrol::can::TalonSRX *back_right_swerve;
 
-frc::AnalogEncoder *left_encoder_1;
-frc::AnalogEncoder *left_encoder_2;
-frc::AnalogEncoder *right_encoder_1;
-frc::AnalogEncoder *right_encoder_2;
+frc::AnalogEncoder *front_left_encoder;
+frc::AnalogEncoder *front_right_encoder;
+frc::AnalogEncoder *back_left_encoder;
+frc::AnalogEncoder *back_right_encoder;
 
 
 
