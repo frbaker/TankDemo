@@ -2,7 +2,12 @@
 #define DRIVETRAIN_H
 
 #include <rev/CANSparkMAX.h>
+#include "ctre/Phoenix.h"
 #include <ctre/phoenix/sensors/PigeonIMU.h>
+
+#include <frc/DigitalOutput.h>
+#include <frc/AnalogEncoder.h>
+
 
 class DriveTrain
 {
@@ -28,7 +33,7 @@ public:
 
 private:
     void configureMotors(); // Used to configure motors specifically for this robot
-
+/*
     rev::CANSparkMax *left_motor_1;
     rev::CANSparkMax *left_motor_2;
     rev::CANSparkMax *right_motor_1;
@@ -38,6 +43,24 @@ private:
     rev::SparkMaxRelativeEncoder *left_encoder_2;
     rev::SparkMaxRelativeEncoder *right_encoder_1;
     rev::SparkMaxRelativeEncoder *right_encoder_2;
+*/
+ctre::phoenix::motorcontrol::can::TalonSRX *left_motor_1;
+ctre::phoenix::motorcontrol::can::TalonSRX *left_motor_2;
+ctre::phoenix::motorcontrol::can::TalonSRX *right_motor_1;
+ctre::phoenix::motorcontrol::can::TalonSRX *right_motor_2;
+
+ctre::phoenix::motorcontrol::can::TalonSRX *left_swerve_1;
+ctre::phoenix::motorcontrol::can::TalonSRX *left_swerve_2;
+ctre::phoenix::motorcontrol::can::TalonSRX *right_swerve_1;
+ctre::phoenix::motorcontrol::can::TalonSRX *right_swerve_2;
+
+frc::AnalogEncoder *left_encoder_1;
+frc::AnalogEncoder *left_encoder_2;
+frc::AnalogEncoder *right_encoder_1;
+frc::AnalogEncoder *right_encoder_2;
+
+
+
 
     ctre::phoenix::sensors::PigeonIMU *gyro;
 
