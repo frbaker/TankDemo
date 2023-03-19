@@ -2,34 +2,24 @@
 
 #include <cmath>
 
+double L = 27.25; //axle to axle measurement from front to back?
+double W = 22.125; //axle to axle measurement from left to right?
+
 /**
  * @brief Construct a new Drive Train:: Drive Train object
  *
  */
 DriveTrain::DriveTrain()
 {
- /*   // Spark motor controller creation for neo brushless motors
-    front_left_drive = new rev::CANSparkMax(4, rev::CANSparkMaxLowLevel::MotorType::kBrushless);
-    front_left_swerve = new rev::CANSparkMax(5, rev::CANSparkMax::MotorType::kBrushless);
-    front_right_drive = new rev::CANSparkMax(6, rev::CANSparkMax::MotorType::kBrushless);
-    front_right_swerve = new rev::CANSparkMax(7, rev::CANSparkMax::MotorType::kBrushless);
-    configureMotors();
-    // Motor encoder creation for neo brushless motors
-    // We have to create a copy of the object created by calling get encoder, which returns an object, not a pointer
-    front_left_encoder = new rev::SparkMaxRelativeEncoder(front_left_drive->GetEncoder());
-    front_right_encoder = new rev::SparkMaxRelativeEncoder(front_left_swerve->GetEncoder());
-    back_left_encoder = new rev::SparkMaxRelativeEncoder(front_right_drive->GetEncoder());
-    back_right_encoder = new rev::SparkMaxRelativeEncoder(front_right_swerve->GetEncoder());
-   */
-    front_left_drive = new ctre::phoenix::motorcontrol::can::TalonSRX(1);
-    front_left_swerve = new ctre::phoenix::motorcontrol::can::TalonSRX(2);
-    front_right_drive = new ctre::phoenix::motorcontrol::can::TalonSRX(3);
-    front_right_swerve = new ctre::phoenix::motorcontrol::can::TalonSRX(4);
+    front_left_drive = new TalonSRX(1);
+    front_left_swerve = new TalonSRX(2);
+    front_right_drive = new TalonSRX(3);
+    front_right_swerve = new TalonSRX(4);
 
-    back_left_drive = new ctre::phoenix::motorcontrol::can::TalonSRX(5);
-    back_left_swerve = new ctre::phoenix::motorcontrol::can::TalonSRX(6);
-    back_right_drive = new ctre::phoenix::motorcontrol::can::TalonSRX(7);
-    back_right_swerve = new ctre::phoenix::motorcontrol::can::TalonSRX(8);
+    back_left_drive = new TalonSRX(5);
+    back_left_swerve = new TalonSRX(6);
+    back_right_drive = new TalonSRX(7);
+    back_right_swerve = new TalonSRX(8);
 
     front_left_encoder = new frc::AnalogEncoder(0);
     front_right_encoder =  new frc::AnalogEncoder(1);
@@ -37,11 +27,61 @@ DriveTrain::DriveTrain()
     back_right_encoder =  new frc::AnalogEncoder(3);
 
     // Gyro
-    gyro = new ctre::phoenix::sensors::PigeonIMU(16); // Create our gyro object with can ID 16
+    gyro = new PigeonIMU(16); // Create our gyro object with can ID 16
                                                       // Zero all sensors
     setZero();
     resetFlags(); // Reset movement flags
 }
+
+/**
+ * @brief Oh boy, This takes 3 joystick inputs and converts it to
+ * swervedrive relative values that can be passed to the swerve modules 
+ * 4 doubles for speed and 4 doubles for direction 
+ * x1 : Joystick1 X axis
+ * y1 : Joystick1 Y axis
+ * x2 : Joystick2 X axis
+ *
+ */
+void DriveTrain::Drive(double x1, double y1, double x2){
+    double r = sqrt((L*L) + (W*W));
+    y1 *= -1;
+    double a = x1 - x2 * (L/r);
+    double b = x1 +x2 * (L/r);
+    double c = y1 - x2 * (W/r);
+    double d = y1 + x2 * (W/r);
+
+    double backRightSpeed = sqrt ((a * a) + (d * d));
+    double backLeftSpeed = sqrt ((a * a) + (c * c));
+    double frontRightSpeed = sqrt ((b * b) + (d * d));
+    double frontLeftSpeed = sqrt ((b * b) + (c * c));
+
+    double backRightAngle = atan2 (a, d) / 3.141592653;
+    double backLeftAngle = atan2 (a, c) / 3.141592653;
+    double frontRightAngle = atan2 (b, d) / 3.141592653;
+    double frontLeftAngle = atan2 (b, c) / 3.141592653;
+}
+
+/**
+ * @brief WheelDrive represents an individual swerve module
+ * Takes the canId for the angleMotor, canId for the speedMotor
+ * and analog port of the encoder of the swerve module
+ */
+void DriveTrain::WheelDrive (int angleMotor, int speedMotor, int encoder) {
+    this->angleMotor = new TalonSRX(angleMotor);
+    this->speedMotor = new TalonSRX(speedMotor);
+    this->imu = new frc::AnalogEncoder(encoder);
+
+    pidController = new frc2::PIDController(1, 0, 0);
+
+   //todo- not sure what to use for these values
+    pidController->EnableContinuousInput(0.0,360.0);
+
+    //todo - not sure what controlMode to use, not sure what setpoint to use
+    this->angleMotor->Set(ControlMode::PercentOutput,pidController->Calculate(this->imu->GetDistance(), 100));
+    this->speedMotor->Set(ControlMode::PercentOutput,pidController->Calculate(this->speedMotor->GetMotorOutputPercent(), .5));
+
+}
+
 
 /**
  * @brief Configure the motors to turn in the correct direction relative to robot forward.

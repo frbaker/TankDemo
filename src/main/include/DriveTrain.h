@@ -1,13 +1,13 @@
 #ifndef DRIVETRAIN_H
 #define DRIVETRAIN_H
 
-#include <rev/CANSparkMAX.h>
 #include "ctre/Phoenix.h"
+#include "ctre/phoenix/motorcontrol/can/TalonSRX.h"
 #include <ctre/phoenix/sensors/PigeonIMU.h>
 
 #include <frc/DigitalOutput.h>
 #include <frc/AnalogEncoder.h>
-
+#include <frc2/command/PIDSubsystem.h>
 
 class DriveTrain
 {
@@ -31,38 +31,32 @@ public:
     double getAngle();
     void resetFlags();
 
+    void Drive(double x1, double y1, double x2);
+    void WheelDrive (int angleMotor, int speedMotor, int encoder);
 private:
     void configureMotors(); // Used to configure motors specifically for this robot
-/*
-    rev::CANSparkMax *left_motor_1;
-    rev::CANSparkMax *left_motor_2;
-    rev::CANSparkMax *front_right_drive;
-    rev::CANSparkMax *front_right_swerve;
 
-    rev::SparkMaxRelativeEncoder *front_left_encoder;
-    rev::SparkMaxRelativeEncoder *front_right_encoder;
-    rev::SparkMaxRelativeEncoder *back_left_encoder;
-    rev::SparkMaxRelativeEncoder *back_right_encoder;
-*/
-ctre::phoenix::motorcontrol::can::TalonSRX *front_left_drive;
-ctre::phoenix::motorcontrol::can::TalonSRX *front_left_swerve;
-ctre::phoenix::motorcontrol::can::TalonSRX *front_right_drive;
-ctre::phoenix::motorcontrol::can::TalonSRX *front_right_swerve;
+/*frc2::PIDController pid{dc::kStabilizationP, dc::kStabilizationI, dc::kStabilizationD}};  */
+TalonSRX *angleMotor;
+TalonSRX *speedMotor;
+frc::AnalogEncoder *imu;
+frc2::PIDController *pidController;
+TalonSRX *front_left_drive;
+TalonSRX *front_left_swerve;
+TalonSRX *front_right_drive;
+TalonSRX *front_right_swerve;
 
-ctre::phoenix::motorcontrol::can::TalonSRX *back_left_drive;
-ctre::phoenix::motorcontrol::can::TalonSRX *back_left_swerve;
-ctre::phoenix::motorcontrol::can::TalonSRX *back_right_drive;
-ctre::phoenix::motorcontrol::can::TalonSRX *back_right_swerve;
+TalonSRX *back_left_drive;
+TalonSRX *back_left_swerve;
+TalonSRX *back_right_drive;
+TalonSRX *back_right_swerve;
 
 frc::AnalogEncoder *front_left_encoder;
 frc::AnalogEncoder *front_right_encoder;
 frc::AnalogEncoder *back_left_encoder;
 frc::AnalogEncoder *back_right_encoder;
 
-
-
-
-    ctre::phoenix::sensors::PigeonIMU *gyro;
+PigeonIMU *gyro;
 
     bool on_init;
     bool on_init_level2;
